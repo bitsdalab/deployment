@@ -10,12 +10,13 @@ spec:
   generators:
   - list:
       elements:
-      # Platform Services
-      - name: argocd
-        namespace: argocd
-        chart: argo/argo-cd
-        version: 8.1.3
-        priority: "100"
+      # Platform Services (ArgoCD excluded - using existing installation)
+      # Future platform services can be added here:
+      # - name: monitoring
+      #   namespace: monitoring
+      #   chart: prometheus-community/kube-prometheus-stack
+      #   version: "61.3.0"
+      #   priority: "200"
 
   template:
     metadata:
@@ -27,9 +28,9 @@ spec:
       project: platform
       
       source:
-        repoURL: https://github.com/bitsdalab/infra
+        repoURL: https://github.com/bitsdalab/deployment
         targetRevision: HEAD
-        path: deployment/argocd/applications/platform/{{name}}
+        path: argocd/applications/platform/{{name}}
         
       destination:
         server: https://kubernetes.default.svc

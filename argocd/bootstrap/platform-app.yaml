@@ -10,9 +10,9 @@ spec:
   project: platform
   
   source:
-    repoURL: https://github.com/bitsdalab/infra
+    repoURL: https://github.com/bitsdalab/deployment
     targetRevision: HEAD
-    path: deployment/argocd/appsets/platform
+    path: argocd/appsets/platform
     
   destination:
     server: https://kubernetes.default.svc

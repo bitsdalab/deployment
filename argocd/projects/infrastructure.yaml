@@ -10,17 +10,11 @@ spec:
   
   # Source repositories
   sourceRepos:
-  - 'https://github.com/bitsdalab/infra'
+  - 'https://github.com/bitsdalab/deployment'
   - 'https://metallb.github.io/metallb'
   - 'https://charts.jetstack.io'
   - 'https://kong.github.io/charts'
   - 'https://charts.longhorn.io'
-  
-  # Repository access (references the secret above)
-  repositories:
-  - url: https://github.com/bitsdalab/infra
-    name: infra-repo
-    type: git
   
   # Destination clusters and namespaces
   destinations:

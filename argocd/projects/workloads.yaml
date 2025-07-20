@@ -10,17 +10,11 @@ spec:
   
   # Source repositories
   sourceRepos:
-  - 'https://github.com/bitsdalab/infra'
+  - 'https://github.com/bitsdalab/deployment'
   - 'https://charts.bitnami.com/bitnami'
   - 'https://helm.gitea.io/gitea'
   - 'https://charts.jenkins.io'
   - 'https://helm.goharbor.io'
-  
-  # Repository access
-  repositories:
-  - url: https://github.com/bitsdalab/infra
-    name: infra-repo
-    type: git
   
   # Destination clusters and namespaces
   destinations:

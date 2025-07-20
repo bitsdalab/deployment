@@ -9,14 +9,33 @@
 
 ### 2. Bootstrap Process
 
+#### Option A: Automated Bootstrap (Recommended)
 ```bash
-# Step 1: Apply ArgoCD Projects (RBAC)
+# Run the bootstrap script
+./deployment/argocd/bootstrap.sh
+```
+
+#### Option B: Manual Bootstrap
+```bash
+# Step 1: Setup Repository Access (for private repos)
+kubectl create secret generic bitsdalab-infra-repo \
+  --namespace=argocd \
+  --from-literal=type=git \
+  --from-literal=url=https://github.com/bitsdalab/infra \
+  --from-literal=username=<github-username> \
+  --from-literal=password=<github-token>
+
+kubectl label secret bitsdalab-infra-repo \
+  --namespace=argocd \
+  argocd.argoproj.io/secret-type=repository
+
+# Step 2: Apply ArgoCD Projects (RBAC)
 kubectl apply -f deployment/argocd/projects/
 
-# Step 2: Apply Root Application (App-of-Apps)
+# Step 3: Apply Root Application (App-of-Apps)
 kubectl apply -f deployment/argocd/bootstrap/root-app.yaml
 
-# Step 3: Watch the magic happen!
+# Step 4: Watch the magic happen!
 kubectl get applications -n argocd
 argocd app list
 ```

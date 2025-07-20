@@ -17,13 +17,13 @@ spec:
     targetRevision: v1.16.2
     helm:
       valueFiles:
-      - $values/deployment/stacks/values/cert-manager/values.yaml
+      - $values/stacks/values/cert-manager/values.yaml
   
   sources:
   - repoURL: https://charts.jetstack.io
     chart: cert-manager
     targetRevision: v1.16.2
-  - repoURL: https://github.com/bitsdalab/infra
+  - repoURL: https://github.com/bitsdalab/deployment
     targetRevision: HEAD
     ref: values
     
