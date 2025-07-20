@@ -1,0 +1,83 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: workloads
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: workloads
+spec:
+  description: Application workloads (microservices, APIs, web applications)
+  
+  # Source repositories
+  sourceRepos:
+  - 'https://github.com/bitsdalab/infra'
+  - 'https://charts.bitnami.com/bitnami'
+  - 'https://helm.gitea.io/gitea'
+  - 'https://charts.jenkins.io'
+  - 'https://helm.goharbor.io'
+  
+  # Repository access
+  repositories:
+  - url: https://github.com/bitsdalab/infra
+    name: infra-repo
+    type: git
+  
+  # Destination clusters and namespaces
+  destinations:
+  - namespace: gitea
+    server: https://kubernetes.default.svc
+  - namespace: jenkins
+    server: https://kubernetes.default.svc
+  - namespace: harbor
+    server: https://kubernetes.default.svc
+  - namespace: cicd
+    server: https://kubernetes.default.svc
+  - namespace: applications
+    server: https://kubernetes.default.svc
+  - namespace: staging
+    server: https://kubernetes.default.svc
+  - namespace: production
+    server: https://kubernetes.default.svc
+  
+  # No cluster-scoped resources for workloads (security)
+  clusterResourceWhitelist: []
+  
+  # Namespace-scoped resources
+  namespaceResourceWhitelist:
+  - group: ''
+    kind: '*'
+  - group: apps
+    kind: '*'
+  - group: extensions
+    kind: '*'
+  - group: networking.k8s.io
+    kind: '*'
+  - group: batch
+    kind: '*'
+  - group: autoscaling
+    kind: '*'
+  
+  # RBAC
+  roles:
+  - name: workloads-admin
+    description: Full access to workload applications
+    policies:
+    - p, proj:workloads:workloads-admin, applications, *, workloads/*, allow
+    groups:
+    - argocd:admin
+  
+  - name: workloads-developer
+    description: Developer access to workload applications
+    policies:
+    - p, proj:workloads:workloads-developer, applications, get, workloads/*, allow
+    - p, proj:workloads:workloads-developer, applications, sync, workloads/*, allow
+    - p, proj:workloads:workloads-developer, applications, action/*, workloads/*, allow
+    groups:
+    - argocd:developer
+  
+  - name: workloads-viewer
+    description: Read-only access to workload applications
+    policies:
+    - p, proj:workloads:workloads-viewer, applications, get, workloads/*, allow
+    groups:
+    - argocd:viewer

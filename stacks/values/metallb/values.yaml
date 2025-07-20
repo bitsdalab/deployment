@@ -1,0 +1,57 @@
+# MetalLB Configuration
+# Version: 0.15.2
+# Documentation: https://metallb.universe.tf/
+
+# Speaker configuration
+speaker:
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  # Enable strictARP for proper ARP handling (required for MetalLB)
+  config:
+    strictARP: true
+
+# Controller configuration  
+controller:
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+
+# Security configuration - MetalLB requires privileged mode
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 65534
+  fsGroup: 65534
+
+# Pod security labels for privileged access
+podLabels:
+  pod-security.kubernetes.io/enforce: "privileged"
+  pod-security.kubernetes.io/audit: "privileged" 
+  pod-security.kubernetes.io/warn: "privileged"
+
+# RBAC configuration
+rbac:
+  create: true
+
+serviceAccount:
+  create: true
+
+# Logging configuration
+logLevel: info
+
+# Prometheus monitoring
+prometheus:
+  serviceAccount: ""
+  namespace: ""
+  podMonitor:
+    enabled: false
+  prometheusRule:
+    enabled: false

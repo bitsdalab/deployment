@@ -1,0 +1,64 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infrastructure
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: infrastructure
+spec:
+  description: Core infrastructure components (MetalLB, cert-manager, storage, networking)
+  
+  # Source repositories
+  sourceRepos:
+  - 'https://github.com/bitsdalab/infra'
+  - 'https://metallb.github.io/metallb'
+  - 'https://charts.jetstack.io'
+  - 'https://kong.github.io/charts'
+  - 'https://charts.longhorn.io'
+  
+  # Repository access (references the secret above)
+  repositories:
+  - url: https://github.com/bitsdalab/infra
+    name: infra-repo
+    type: git
+  
+  # Destination clusters and namespaces
+  destinations:
+  - namespace: metallb-system
+    server: https://kubernetes.default.svc
+  - namespace: cert-manager
+    server: https://kubernetes.default.svc
+  - namespace: ingress
+    server: https://kubernetes.default.svc
+  - namespace: longhorn-system
+    server: https://kubernetes.default.svc
+  - namespace: kube-system
+    server: https://kubernetes.default.svc
+  
+  # Cluster-scoped resources
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  
+  # Namespace-scoped resources
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  
+  # RBAC - who can manage this project
+  roles:
+  - name: infrastructure-admin
+    description: Full access to infrastructure project
+    policies:
+    - p, proj:infrastructure:infrastructure-admin, applications, *, infrastructure/*, allow
+    - p, proj:infrastructure:infrastructure-admin, repositories, *, *, allow
+    groups:
+    - argocd:admin
+  
+  # Sync policy
+  syncWindows:
+  - kind: allow
+    schedule: '* * * * *'
+    duration: 24h
+    applications:
+    - '*'

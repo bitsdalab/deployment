@@ -1,0 +1,72 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infrastructure
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: infrastructure-appset
+    app.kubernetes.io/part-of: infrastructure
+spec:
+  generators:
+  - list:
+      elements:
+      # Core Infrastructure Components (order matters)
+      - name: metallb
+        namespace: metallb-system
+        chart: metallb/metallb
+        version: 0.15.2
+        priority: "100"
+        
+      - name: cert-manager
+        namespace: cert-manager
+        chart: jetstack/cert-manager
+        version: v1.16.2
+        priority: "200"
+        
+      - name: kong
+        namespace: ingress
+        chart: kong/kong
+        version: 2.40.0
+        priority: "300"
+        
+      - name: longhorn
+        namespace: longhorn-system
+        chart: longhorn/longhorn
+        version: 1.8.2
+        priority: "400"
+
+  template:
+    metadata:
+      name: "{{name}}"
+      labels:
+        app.kubernetes.io/name: "{{name}}"
+        app.kubernetes.io/part-of: infrastructure
+    spec:
+      project: infrastructure
+      
+      source:
+        repoURL: https://github.com/bitsdalab/infra
+        targetRevision: HEAD
+        path: deployment/argocd/applications/infrastructure/{{name}}
+        
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+      
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+        - Validate=true
+        - SkipDryRunOnMissingResource=true
+        retry:
+          limit: 3
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m

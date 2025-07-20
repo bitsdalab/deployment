@@ -1,0 +1,12 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: bitsb-root-ca-issuer
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+    argocd.argoproj.io/hook: PostSync
+  labels:
+    app.kubernetes.io/managed-by: bitsb-automation
+spec:
+  ca:
+    secretName: bitsb-root-ca

@@ -1,0 +1,168 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: install-longhorn-deps
+  namespace: longhorn-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "-1"
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+spec:
+  template:
+    spec:
+      serviceAccountName: longhorn-deps-installer
+      containers:
+      - name: install-deps
+        image: bitnami/kubectl:latest
+        command:
+        - /bin/bash
+        - /scripts/install-longhorn-deps.sh
+        volumeMounts:
+        - name: scripts
+          mountPath: /scripts
+      restartPolicy: OnFailure
+  backoffLimit: 3
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: longhorn-deps-installer
+  namespace: longhorn-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: longhorn-deps-installer
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+rules:
+- apiGroups: [""]
+  resources: ["nodes", "pods", "namespaces"]
+  verbs: ["get", "list", "create"]
+- apiGroups: ["apps"]
+  resources: ["daemonsets"]
+  verbs: ["get", "list", "create", "delete"]
+- apiGroups: ["batch"]
+  resources: ["jobs"]
+  verbs: ["get", "list", "create", "delete"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: longhorn-deps-installer
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: longhorn-deps-installer
+subjects:
+- kind: ServiceAccount
+  name: longhorn-deps-installer
+  namespace: longhorn-system
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: longhorn-deps-script
+  namespace: longhorn-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "-2"
+data:
+  install-longhorn-deps.sh: |
+    #!/bin/bash
+    set -e
+    echo "=== Installing Longhorn Dependencies on All Nodes ==="
+
+    # Create DaemonSet to install dependencies on all nodes
+    cat <<EOF | kubectl apply -f -
+    apiVersion: apps/v1
+    kind: DaemonSet
+    metadata:
+      name: longhorn-deps-installer
+      namespace: kube-system
+      labels:
+        app: longhorn-deps-installer
+    spec:
+      selector:
+        matchLabels:
+          app: longhorn-deps-installer
+      template:
+        metadata:
+          labels:
+            app: longhorn-deps-installer
+        spec:
+          hostPID: true
+          hostNetwork: true
+          tolerations:
+          - operator: Exists
+          containers:
+          - name: installer
+            image: ubuntu:24.04
+            securityContext:
+              privileged: true
+            command:
+            - nsenter
+            - --target
+            - "1"
+            - --mount
+            - --uts
+            - --ipc
+            - --net
+            - --pid
+            - --
+            - bash
+            - -c
+            - |
+              set -e
+              echo "Installing Longhorn dependencies on node: \$(hostname)"
+              
+              # Update package list
+              apt-get update -qq
+              
+              # Install open-iscsi
+              apt-get install -y open-iscsi
+              
+              # Enable and start iscsid service
+              systemctl enable iscsid
+              systemctl start iscsid
+              
+              # Verify installation
+              if command -v iscsiadm >/dev/null 2>&1; then
+                echo "✓ iscsiadm is installed"
+                iscsiadm --version | head -1
+              else
+                echo "✗ iscsiadm is NOT installed"
+                exit 1
+              fi
+              
+              if systemctl is-active --quiet iscsid; then
+                echo "✓ iscsid service is running"
+              else
+                echo "✗ iscsid service is NOT running"
+                exit 1
+              fi
+              
+              echo "✅ Longhorn dependencies installed successfully on \$(hostname)"
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "128Mi"
+              limits:
+                cpu: "500m"
+                memory: "512Mi"
+          restartPolicy: OnFailure
+    EOF
+
+    echo "⏳ Waiting for dependency installation to complete..."
+    kubectl wait --for=condition=ready pod -l app=longhorn-deps-installer -n kube-system --timeout=300s
+
+    echo "🔍 Checking installation logs..."
+    kubectl logs -l app=longhorn-deps-installer -n kube-system --tail=50
+
+    echo "🧹 Cleaning up installer DaemonSet..."
+    kubectl delete daemonset longhorn-deps-installer -n kube-system
+
+    echo "🎉 Longhorn dependencies installation completed!"
