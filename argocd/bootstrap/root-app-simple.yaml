@@ -7,11 +7,11 @@ metadata:
     app.kubernetes.io/name: infrastructure-app
     app.kubernetes.io/part-of: bootstrap
 spec:
-  project: infrastructure
-  
+  project: default
+
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
-    targetRevision: HEAD
+    targetRevision: feature/argocd-1
     path: argocd/appsets/infrastructure
     
   destination:
