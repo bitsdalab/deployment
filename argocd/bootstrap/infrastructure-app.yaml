@@ -7,7 +7,7 @@ metadata:
     app.kubernetes.io/name: infrastructure-app
     app.kubernetes.io/part-of: bootstrap
 spec:
-  project: infrastructure
+  project: default
   
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
