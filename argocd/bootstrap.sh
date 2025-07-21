@@ -5,7 +5,7 @@ echo "🚀 Bootstrapping ArgoCD GitOps Platform (Development)"
 echo "====================================================="
 
 # Configuration
-GITHUB_REPO="https://github.com/bitsdalab/deployment"
+GITHUB_REPO="https://github.com/bitsdalab/deployment.git"
 ARGOCD_NAMESPACE="argocd"
 
 # Check if ArgoCD is installed
@@ -42,6 +42,7 @@ else
 fi
 
 # Create repository secret with credentials if available
+PROJECT="default"  # Set your ArgoCD project name here
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret
@@ -54,6 +55,7 @@ type: Opaque
 stringData:
   type: git
   url: $GITHUB_REPO
+  project: $PROJECT
 ${GITHUB_USERNAME:+  username: $GITHUB_USERNAME}
 ${GITHUB_TOKEN:+  password: $GITHUB_TOKEN}
 EOF

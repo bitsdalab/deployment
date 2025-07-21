@@ -23,8 +23,8 @@ spec:
   - repoURL: https://kong.github.io/charts
     chart: kong
     targetRevision: 2.40.0
-  - repoURL: https://github.com/bitsdalab/deployment
-    targetRevision: HEAD
+  - repoURL: https://github.com/bitsdalab/deployment.git
+    targetRevision: feature/argocd-1
     ref: values
     
   destination:

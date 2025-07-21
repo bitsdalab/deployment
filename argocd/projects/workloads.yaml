@@ -10,7 +10,7 @@ spec:
   
   # Source repositories
   sourceRepos:
-  - 'https://github.com/bitsdalab/deployment'
+  - 'https://github.com/bitsdalab/deployment.git'
   - 'https://charts.bitnami.com/bitnami'
   - 'https://helm.gitea.io/gitea'
   - 'https://charts.jenkins.io'

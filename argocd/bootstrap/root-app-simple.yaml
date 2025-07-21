@@ -10,7 +10,7 @@ spec:
   project: infrastructure
   
   source:
-    repoURL: https://github.com/bitsdalab/deployment
+    repoURL: https://github.com/bitsdalab/deployment.git
     targetRevision: HEAD
     path: argocd/appsets/infrastructure
     

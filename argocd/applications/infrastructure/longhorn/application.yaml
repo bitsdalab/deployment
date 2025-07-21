@@ -23,8 +23,8 @@ spec:
   - repoURL: https://charts.longhorn.io
     chart: longhorn
     targetRevision: 1.8.2
-  - repoURL: https://github.com/bitsdalab/deployment
-    targetRevision: HEAD
+  - repoURL: https://github.com/bitsdalab/deployment.git
+    targetRevision: feature/argocd-1
     ref: values
     
   destination:

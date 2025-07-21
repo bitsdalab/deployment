@@ -10,7 +10,7 @@ spec:
   
   # Source repositories
   sourceRepos:
-  - 'https://github.com/bitsdalab/deployment'
+  - 'https://github.com/bitsdalab/deployment.git'
   - 'https://metallb.github.io/metallb'
   - 'https://charts.jetstack.io'
   - 'https://kong.github.io/charts'

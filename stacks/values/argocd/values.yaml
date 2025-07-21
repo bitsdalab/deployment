@@ -12,6 +12,18 @@ global:
 # Server configuration
 server:
   
+  # CA certificates volume mount for HTTPS trust (simple hostPath approach)
+  volumes:
+    - name: ca-certificates
+      hostPath:
+        path: /etc/ssl/certs
+        type: Directory
+  
+  volumeMounts:
+    - name: ca-certificates
+      mountPath: /etc/ssl/certs
+      readOnly: true
+  
   # Ingress configuration (HTTPS only)
   ingress:
     enabled: true
@@ -84,6 +96,18 @@ configs:
 
 # Application controller configuration
 controller:
+  # CA certificates volume mount for HTTPS trust (simple hostPath approach)
+  volumes:
+    - name: ca-certificates
+      hostPath:
+        path: /etc/ssl/certs
+        type: Directory
+  
+  volumeMounts:
+    - name: ca-certificates
+      mountPath: /etc/ssl/certs
+      readOnly: true
+
   resources:
     requests:
       cpu: "100m"
@@ -94,6 +118,18 @@ controller:
 
 # Repo server configuration
 repoServer:
+  # CA certificates volume mount for HTTPS trust (simple hostPath approach)
+  volumes:
+    - name: ca-certificates
+      hostPath:
+        path: /etc/ssl/certs
+        type: Directory
+  
+  volumeMounts:
+    - name: ca-certificates
+      mountPath: /etc/ssl/certs
+      readOnly: true
+
   resources:
     requests:
       cpu: "50m"

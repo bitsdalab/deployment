@@ -23,7 +23,7 @@ spec:
   - repoURL: https://argoproj.github.io/argo-helm
     chart: argo-cd
     targetRevision: 8.1.3
-  - repoURL: https://github.com/bitsdalab/deployment
+  - repoURL: https://github.com/bitsdalab/deployment.git
     targetRevision: HEAD
     ref: values
     
