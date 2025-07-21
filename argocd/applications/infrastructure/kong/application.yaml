@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/name: kong
     app.kubernetes.io/part-of: infrastructure
 spec:
-  project: infrastructure
+  project: default
   
   source:
     repoURL: https://kong.github.io/charts

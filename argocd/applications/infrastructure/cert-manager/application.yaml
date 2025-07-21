@@ -9,7 +9,7 @@ metadata:
     app.kubernetes.io/name: cert-manager
     app.kubernetes.io/part-of: infrastructure
 spec:
-  project: infrastructure
+  project: default
   
   source:
     repoURL: https://charts.jetstack.io

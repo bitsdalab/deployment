@@ -42,7 +42,7 @@ spec:
         app.kubernetes.io/name: "{{name}}"
         app.kubernetes.io/part-of: infrastructure
     spec:
-      project: infrastructure
+      project: default
       
       source:
         repoURL: https://github.com/bitsdalab/deployment.git
