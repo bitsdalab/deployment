@@ -42,8 +42,8 @@ spec:
         app.kubernetes.io/name: "{{name}}"
         app.kubernetes.io/part-of: infrastructure
     spec:
-      project: default
-      
+      project: infrastructure
+
       source:
         repoURL: https://github.com/bitsdalab/deployment.git
         targetRevision: feature/argocd-1

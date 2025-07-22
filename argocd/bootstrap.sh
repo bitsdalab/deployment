@@ -25,8 +25,7 @@ else
     echo "🔐 Configuring repository access with provided credentials..."
 fi
 
-# Create repository secret with credentials if available
-PROJECT="default"  # Set your ArgoCD project name here
+PROJECT="infrastructure"  # Set your ArgoCD project name here
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret
