@@ -59,52 +59,14 @@ kubectl apply -f argocd/projects/infrastructure.yaml
 
 echo "✅ ArgoCD Projects applied"
 
-# Step 3: Apply Root Application
+# Step 3: Apply Root Applications (AppSet and Applications)
 echo ""
 echo "📋 Step 3: Starting GitOps Bootstrap"
 echo "==================================="
 
-#kubectl apply -f argocd/bootstrap/root-app.yaml
-kubectl apply -f argocd/bootstrap/infrastructure-app.yaml
+# Apply ApplicationSet root (deploys all ApplicationSets)
+kubectl apply -f argocd/bootstrap/infrastructure-appset-root.yaml
+# Apply Applications root (deploys all Applications)
+kubectl apply -f argocd/bootstrap/infrastructure-apps-root.yaml
 
-echo "✅ Infrastructure Application created"
-
-# Step 4: Wait and verify
-echo ""
-echo "📋 Step 4: Verification"
-echo "======================"
-
-echo "⏳ Waiting for applications to appear..."
-sleep 15
-
-echo "📊 Current Applications:"
-kubectl get applications -n $ARGOCD_NAMESPACE
-
-echo ""
-echo "🎉 Bootstrap Complete!"
-echo "====================="
-echo ""
-echo "🔗 Access Points:"
-echo "  ArgoCD UI: https://argocd.cicd.bitsb.dev"
-echo "  ArgoCD Admin Password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
-echo ""
-echo "📝 What's Happening:"
-echo "  1. ArgoCD is deploying infrastructure components (MetalLB, cert-manager, Kong, Longhorn)"
-echo "  2. Root CA will be created automatically for *.bitsb.dev"
-echo "  3. LoadBalancer IPs will be assigned from 192.168.1.240-250"
-echo "  4. All services will have automatic HTTPS certificates"
-echo ""
-echo "⏳ Deployment Progress:"
-echo "  Watch: kubectl get applications -n argocd -w"
-echo "  Pods:  kubectl get pods -A"
-echo "  Services: kubectl get svc -A -o wide | grep LoadBalancer"
-echo ""
-echo "🔍 Useful Commands:"
-echo "  kubectl get applications -n argocd"
-echo "  kubectl logs -n argocd -l app.kubernetes.io/name=argocd-application-controller"
-echo ""
-echo "🎯 Development Workflow:"
-echo "  1. Edit values in stacks/values/"
-echo "  2. Commit and push to Git"
-echo "  3. ArgoCD automatically syncs changes"
-echo "  4. View changes in ArgoCD UI"
+echo "✅ Infrastructure Applications and ApplicationSets created"
