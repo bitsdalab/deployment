@@ -33,7 +33,7 @@ spec:
         targetRevision: "{{targetRevision}}"
         helm:
           valueFiles:
-            - argocd/values/{{name}}/values.yaml
+            - ../../../argocd/values/{{name}}/values.yaml
         
       destination:
         server: https://kubernetes.default.svc
