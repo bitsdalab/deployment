@@ -11,48 +11,18 @@ spec:
   # Source repositories
   sourceRepos:
   - 'https://github.com/bitsdalab/deployment.git'
-  - 'https://metallb.github.io/metallb'
-  - 'https://charts.jetstack.io'
   - 'https://kong.github.io/charts'
-  - 'https://charts.longhorn.io'
   
   # Destination clusters and namespaces
   destinations:
-  - namespace: metallb-system
-    server: https://kubernetes.default.svc
-  - namespace: cert-manager
-    server: https://kubernetes.default.svc
   - namespace: ingress
     server: https://kubernetes.default.svc
-  - namespace: longhorn-system
-    server: https://kubernetes.default.svc
-  - namespace: kube-system
-    server: https://kubernetes.default.svc
   
-  # Cluster-scoped resources
-  clusterResourceWhitelist:
-  - group: '*'
-    kind: '*'
-  
-  # Namespace-scoped resources
+  clusterResourceWhitelist: []
   namespaceResourceWhitelist:
   - group: '*'
     kind: '*'
   
-  # RBAC - who can manage this project
-  roles:
-  - name: infrastructure-admin
-    description: Full access to infrastructure project
-    policies:
-    - p, proj:infrastructure:infrastructure-admin, applications, *, infrastructure/*, allow
-    - p, proj:infrastructure:infrastructure-admin, repositories, *, *, allow
-    groups:
-    - argocd:admin
+  roles: []
   
-  # Sync policy
-  syncWindows:
-  - kind: allow
-    schedule: '* * * * *'
-    duration: 24h
-    applications:
-    - '*'
+  syncWindows: []

@@ -8,22 +8,6 @@ echo "====================================================="
 GITHUB_REPO="https://github.com/bitsdalab/deployment.git"
 ARGOCD_NAMESPACE="argocd"
 
-# Check if ArgoCD is installed
-if ! kubectl get namespace $ARGOCD_NAMESPACE >/dev/null 2>&1; then
-    echo "❌ ArgoCD namespace not found. Installing ArgoCD..."
-    
-    # Install ArgoCD
-    kubectl create namespace argocd
-    kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-    
-    echo "⏳ Waiting for ArgoCD to be ready..."
-    kubectl wait --for=condition=available --timeout=300s deployment/argocd-server -n argocd
-    
-    echo "✅ ArgoCD installed successfully"
-else
-    echo "✅ ArgoCD already installed - using existing installation"
-fi
-
 # Step 1: Repository Access with credentials
 echo ""
 echo "📋 Step 1: Repository Access Setup"
@@ -67,9 +51,12 @@ echo ""
 echo "📋 Step 2: Applying ArgoCD Projects (RBAC)"
 echo "=========================================="
 
+#setup ArgoCD projects
+echo "Applying ArgoCD projects..."
+
 kubectl apply -f argocd/projects/infrastructure.yaml
-kubectl apply -f argocd/projects/platform.yaml
-kubectl apply -f argocd/projects/workloads.yaml
+#kubectl apply -f argocd/projects/platform.yaml
+#kubectl apply -f argocd/projects/workloads.yaml
 
 echo "✅ ArgoCD Projects applied"
 
@@ -78,9 +65,10 @@ echo ""
 echo "📋 Step 3: Starting GitOps Bootstrap"
 echo "==================================="
 
-kubectl apply -f argocd/bootstrap/root-app.yaml
+#kubectl apply -f argocd/bootstrap/root-app.yaml
+kubectl apply -f argocd/bootstrap/infrastructure-app.yaml
 
-echo "✅ Root Application created"
+echo "✅ Infrastructure Application created"
 
 # Step 4: Wait and verify
 echo ""
