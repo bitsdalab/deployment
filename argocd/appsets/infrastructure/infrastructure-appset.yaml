@@ -11,29 +11,12 @@ spec:
   - list:
       elements:
       # Core Infrastructure Components (order matters)
-      #- name: metallb
-      #  namespace: metallb-system
-      #  chart: metallb/metallb
-      #  version: 0.15.2
-      #  priority: "100"
-        
-      #- name: cert-manager
-      #  namespace: cert-manager
-      #  chart: jetstack/cert-manager
-      #  version: v1.16.2
-      #  priority: "200"
-      #  
       - name: kong
         namespace: ingress
-        chart: kong/kong
-        version: 2.51.0
+        repoURL: https://kong.github.io/charts
+        chart: kong
+        targetRevision: 2.51.0
         priority: "300"
-      #  
-      #- name: longhorn
-      #  namespace: longhorn-system
-      #  chart: longhorn/longhorn
-      #  version: 1.8.2
-      #  priority: "400"
 
   template:
     metadata:
@@ -45,9 +28,9 @@ spec:
       project: infrastructure
 
       source:
-        repoURL: https://github.com/bitsdalab/deployment.git
-        targetRevision: feature/argocd-1
-        path: argocd/applications/infrastructure/{{name}}
+        repoURL: "{{repoURL}}"
+        chart: "{{chart}}"
+        targetRevision: "{{targetRevision}}"
         helm:
           valueFiles:
             - argocd/values/{{name}}/values.yaml
