@@ -27,7 +27,7 @@ spec:
         - /bin/bash
         - -c
         - |
-          apt-get update -qq && apt-get install -y nsenter
+          apt-get update -qq && apt-get install -y util-linux
           echo "=== Installing open-iscsi on node $(hostname) ==="
           nsenter --target 1 --mount --uts --ipc --net --pid -- bash << 'HOSTSCRIPT'
             set -e
