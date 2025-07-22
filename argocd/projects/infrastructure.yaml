@@ -15,10 +15,8 @@ spec:
   
   # Destination clusters and namespaces
   destinations:
-  - namespace: ingress
-    server: https://kubernetes.default.svc
-  - namespace: argocd
-    server: https://kubernetes.default.svc
+  - namespace: '*'
+    server: '*'
   
   clusterResourceWhitelist:
   # Allow all cluster-scoped resources (lock down for prod)
