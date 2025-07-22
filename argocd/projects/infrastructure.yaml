@@ -20,8 +20,12 @@ spec:
   - namespace: argocd
     server: https://kubernetes.default.svc
   
-  clusterResourceWhitelist: []
+  clusterResourceWhitelist:
+  # Allow all cluster-scoped resources (lock down for prod)
+  - group: '*'
+    kind: '*'
   namespaceResourceWhitelist:
+  # Allow all namespaced resources (lock down for prod)
   - group: '*'
     kind: '*'
   
