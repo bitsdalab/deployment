@@ -27,13 +27,16 @@ spec:
     spec:
       project: infrastructure
 
-      source:
-        repoURL: "{{repoURL}}"
-        chart: "{{chart}}"
-        targetRevision: "{{targetRevision}}"
-        helm:
-          valueFiles:
-            - ../argocd/values/{{name}}/values.yaml
+      sources:
+        - repoURL: "{{repoURL}}"
+          chart: "{{chart}}"
+          targetRevision: "{{targetRevision}}"
+          helm:
+            valueFiles:
+              - $values/argocd/values/{{name}}/values.yaml
+        - repoURL: https://github.com/bitsdalab/deployment.git
+          targetRevision: feature/argocd-1
+          ref: values
         
       destination:
         server: https://kubernetes.default.svc
