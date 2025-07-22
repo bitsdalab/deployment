@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: longhorn-deps-installer
+  namespace: kube-system
+  labels:
+    app: longhorn-deps-installer
+spec:
+  selector:
+    matchLabels:
+      app: longhorn-deps-installer
+  template:
+    metadata:
+      labels:
+        app: longhorn-deps-installer
+    spec:
+      hostPID: true
+      hostNetwork: true
+      tolerations:
+      - operator: Exists
+      containers:
+      - name: installer
+        image: ubuntu:24.04
+        securityContext:
+          privileged: true
+        command:
+        - /bin/bash
+        - -c
+        - |
+          apt-get update -qq
+          DEBIAN_FRONTEND=noninteractive apt-get install -y open-iscsi
+          systemctl enable iscsid
+          systemctl start iscsid
+          iscsiadm --version
+          sleep 3600
+      restartPolicy: Always

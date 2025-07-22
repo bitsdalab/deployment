@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: longhorn-deps
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://github.com/bitsdalab/deployment.git
+    targetRevision: feature/argocd-1
+    path: argocd/applications/infrastructure/longhorn
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: kube-system
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

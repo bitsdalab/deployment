@@ -17,6 +17,13 @@ spec:
         chart: kong
         targetRevision: 2.51.0
         priority: "300"
+      # Longhorn Distributed Storage
+      - name: longhorn
+        namespace: longhorn-system
+        repoURL: https://charts.longhorn.io
+        chart: longhorn
+        targetRevision: 1.9.0
+        priority: "400"
 
   template:
     metadata:
