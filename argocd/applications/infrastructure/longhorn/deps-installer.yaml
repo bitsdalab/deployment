@@ -27,10 +27,21 @@ spec:
         - /bin/bash
         - -c
         - |
-          apt-get update -qq
-          DEBIAN_FRONTEND=noninteractive apt-get install -y open-iscsi
-          systemctl enable iscsid
-          systemctl start iscsid
-          iscsiadm --version
-          sleep 3600
+          apt-get update -qq && apt-get install -y nsenter
+          echo "=== Installing open-iscsi on node $(hostname) ==="
+          nsenter --target 1 --mount --uts --ipc --net --pid -- bash << 'HOSTSCRIPT'
+            set -e
+            echo "Updating package list..."
+            apt-get update -qq
+            echo "Installing open-iscsi..."
+            DEBIAN_FRONTEND=noninteractive apt-get install -y open-iscsi
+            echo "Enabling iscsid service..."
+            systemctl enable iscsid
+            systemctl start iscsid
+            echo "Verifying installation..."
+            iscsiadm --version
+            echo "open-iscsi installed successfully!"
+          HOSTSCRIPT
+          echo "Installation completed on $(hostname)"
+          sleep infinity
       restartPolicy: Always
