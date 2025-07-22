@@ -12,6 +12,7 @@ spec:
   sourceRepos:
   - 'https://github.com/bitsdalab/deployment.git'
   - 'https://kong.github.io/charts'
+  - 'https://charts.longhorn.io'
   
   # Destination clusters and namespaces
   destinations:
