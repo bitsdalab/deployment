@@ -1,55 +1,56 @@
-apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
-metadata:
-  name: platform
-  namespace: argocd
-  labels:
-    app.kubernetes.io/name: platform-appset
-    app.kubernetes.io/part-of: platform
-spec:
-  generators:
-  - list:
-      elements:
-      # Platform Services (ArgoCD excluded - using existing installation)
-      # Future platform services can be added here:
-      # - name: monitoring
-      #   namespace: monitoring
-      #   chart: prometheus-community/kube-prometheus-stack
-      #   version: "61.3.0"
-      #   priority: "200"
-
-  template:
-    metadata:
-      name: "{{name}}"
-      labels:
-        app.kubernetes.io/name: "{{name}}"
-        app.kubernetes.io/part-of: platform
-    spec:
-      project: platform
-      
-      source:
-        repoURL: https://github.com/bitsdalab/deployment.git
-        targetRevision: HEAD
-        path: argocd/applications/platform/{{name}}
-        
-      destination:
-        server: https://kubernetes.default.svc
-        namespace: "{{namespace}}"
-      
-      syncPolicy:
-        automated:
-          prune: true
-          selfHeal: true
-          allowEmpty: false
-        syncOptions:
-        - CreateNamespace=true
-        - PrunePropagationPolicy=foreground
-        - PruneLast=true
-        - Validate=true
-        - SkipDryRunOnMissingResource=true
-        retry:
-          limit: 3
-          backoff:
-            duration: 5s
-            factor: 2
-            maxDuration: 3m
+#apiVersion: argoproj.io/v1alpha1
+#kind: ApplicationSet
+#metadata:
+#  name: platform
+#  namespace: argocd
+#  labels:
+#    app.kubernetes.io/name: platform-appset
+#    app.kubernetes.io/part-of: platform
+#spec:
+#  generators:
+#  - list:
+#      elements:
+#      # Platform Services (ArgoCD excluded - using existing installation)
+#      # Future platform services can be added here:
+#      # - name: monitoring
+#      #   namespace: monitoring
+#      #   chart: prometheus-community/kube-prometheus-stack
+#      #   version: "61.3.0"
+#      #   priority: "200"
+#
+#  template:
+#    metadata:
+#      name: "{{name}}"
+#      labels:
+#        app.kubernetes.io/name: "{{name}}"
+#        app.kubernetes.io/part-of: platform
+#    spec:
+#      project: platform
+#      
+#      source:
+#        repoURL: https://github.com/bitsdalab/deployment.git
+#        targetRevision: HEAD
+#        path: argocd/applications/platform/{{name}}
+#        
+#      destination:
+#        server: https://kubernetes.default.svc
+#        namespace: "{{namespace}}"
+#      
+#      syncPolicy:
+#        automated:
+#          prune: true
+#          selfHeal: true
+#          allowEmpty: false
+#        syncOptions:
+#        - CreateNamespace=true
+#        - PrunePropagationPolicy=foreground
+#        - PruneLast=true
+#        - Validate=true
+#        - SkipDryRunOnMissingResource=true
+#        retry:
+#          limit: 3
+#          backoff:
+#            duration: 5s
+#            factor: 2
+#            maxDuration: 3m
+#
