@@ -17,12 +17,21 @@ spec:
         chart: kong
         targetRevision: 2.51.0
         priority: "300"
+
+      # cert-manager TLS Certificate Management
+      - name: cert-manager
+        namespace: cert-manager
+        repoURL: https://charts.jetstack.io
+        chart: cert-manager
+        targetRevision: v1.18.2
+        priority: "350"
+
       # Longhorn Distributed Storage
       - name: longhorn
         namespace: longhorn-system
         repoURL: https://charts.longhorn.io
         chart: longhorn
-        targetRevision: 1.9.0
+        targetRevision: 1.8.2
         priority: "400"
 
   template:

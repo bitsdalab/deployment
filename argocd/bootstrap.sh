@@ -64,9 +64,12 @@ echo ""
 echo "📋 Step 3: Starting GitOps Bootstrap"
 echo "==================================="
 
+
 # Apply ApplicationSet root (deploys all ApplicationSets)
 kubectl apply -f argocd/bootstrap/infrastructure-appset-root.yaml
 # Apply Applications root (deploys all Applications)
 kubectl apply -f argocd/bootstrap/infrastructure-apps-root.yaml
+# Apply cert-manager CA Application (for Root CA and ClusterIssuer)
+kubectl apply -f argocd/applications/infrastructure/cert-manager-ca-application.yaml
 
 echo "✅ Infrastructure Applications and ApplicationSets created"

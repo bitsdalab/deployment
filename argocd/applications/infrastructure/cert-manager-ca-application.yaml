@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cert-manager-ca
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://github.com/bitsdalab/deployment.git
+    targetRevision: feature/argocd-1
+    path: argocd/applications/infrastructure/cert-manager
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: cert-manager
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
