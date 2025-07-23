@@ -13,7 +13,7 @@ spec:
   - 'https://github.com/bitsdalab/deployment.git'
   - 'https://kong.github.io/charts'
   - 'https://charts.longhorn.io'
-  
+  - 'https://charts.jetstack.io'
   # Destination clusters and namespaces
   destinations:
   - namespace: '*'
