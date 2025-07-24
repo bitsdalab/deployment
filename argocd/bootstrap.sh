@@ -13,17 +13,19 @@ echo ""
 echo "📋 Step 1: Repository Access Setup"
 echo "=================================="
 
-# Check if credentials are provided
-if [[ -z "$GITHUB_USERNAME" || -z "$GITHUB_TOKEN" ]]; then
-    echo "⚠️  GitHub credentials not provided in environment variables"
-    echo "   Please set GITHUB_USERNAME and GITHUB_TOKEN:"
-    echo "   export GITHUB_USERNAME=bits176"
-    echo "   export GITHUB_TOKEN=ghp_your_token_here"
-    echo ""
-    echo "🔒 Using current cluster credentials (if any)..."
-else
-    echo "🔐 Configuring repository access with provided credentials..."
+
+# Prompt for GitHub credentials if not set
+if [[ -z "$GITHUB_USERNAME" ]]; then
+    read -p "GitHub Username: " GITHUB_USERNAME
+    export GITHUB_USERNAME
 fi
+if [[ -z "$GITHUB_TOKEN" ]]; then
+    read -s -p "GitHub Token (will not echo): " GITHUB_TOKEN
+    echo
+    export GITHUB_TOKEN
+fi
+
+echo "🔐 Configuring repository access with provided credentials..."
 
 PROJECT="infrastructure"  # Set your ArgoCD project name here
 kubectl apply -f - <<EOF
@@ -69,7 +71,5 @@ echo "==================================="
 kubectl apply -f argocd/bootstrap/infrastructure-appset-root.yaml
 # Apply Applications root (deploys all Applications)
 kubectl apply -f argocd/bootstrap/infrastructure-apps-root.yaml
-# Apply cert-manager CA Application (for Root CA and ClusterIssuer)
-kubectl apply -f argocd/applications/infrastructure/cert-manager-ca-application.yaml
 
 echo "✅ Infrastructure Applications and ApplicationSets created"

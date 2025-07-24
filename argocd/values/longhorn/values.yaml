@@ -1,4 +1,9 @@
 # Longhorn Configuration
+
+# Use pre-created ServiceAccount for ArgoCD-managed install
+serviceAccount:
+  name: longhorn-service-account
+  create: false
 # Version: 1.8.2
 # Documentation: https://longhorn.io/docs/
 
