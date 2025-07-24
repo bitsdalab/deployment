@@ -1,0 +1,34 @@
+# MinIO values.yaml for production (single-tenant, S3-compatible)
+mode: standalone
+# Use an existing secret for credentials (recommended for production)
+existingSecret: minio-credentials
+
+# Auto-create the 'velero' bucket for Velero backups
+buckets:
+  - name: velero
+    policy: none
+    purge: false
+resources:
+  requests:
+    memory: 512Mi
+    cpu: 250m
+  limits:
+    memory: 2Gi
+    cpu: 1
+persistence:
+  enabled: true
+  size: 50Gi
+  storageClass: "longhorn"
+service:
+  type: ClusterIP
+  port: 9000
+  consolePort: 9001
+# Expose via ingress if needed
+#ingress:
+#  enabled: true
+#  hosts:
+#    - minio.example.com
+#  tls:
+#    - secretName: minio-tls
+#      hosts:
+#        - minio.example.com
