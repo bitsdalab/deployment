@@ -13,40 +13,46 @@ spec:
       # Core Infrastructure Components (order matters)
       - name: metallb
         namespace: metallb-system
-        chart: metallb/metallb
-        version: 0.15.2
+        repoURL: https://metallb.github.io/metallb
+        chart: metallb
+        targetRevision: 0.15.2
         priority: "100"
 
       - name: cert-manager
         namespace: cert-manager
-        chart: jetstack/cert-manager
-        version: v1.16.2
+        repoURL: https://charts.jetstack.io
+        chart: cert-manager
+        targetRevision: v1.16.2
         priority: "200"
 
       - name: kong
         namespace: ingress
-        chart: kong/kong
-        version: 2.40.0
+        repoURL: https://kong.github.io/charts
+        chart: kong
+        targetRevision: 2.40.0
         priority: "300"
 
       - name: longhorn
         namespace: longhorn-system
-        chart: longhorn/longhorn
-        version: 1.8.2
+        repoURL: https://charts.longhorn.io
+        chart: longhorn
+        targetRevision: 1.8.2
         priority: "400"
 
       # MinIO S3-compatible storage for Velero
       - name: minio
         namespace: minio
-        chart: minio/minio
-        version: 5.4.0
+        repoURL: https://charts.min.io/
+        chart: minio
+        targetRevision: 5.4.0
         priority: "450"
 
       # Velero Backup/Restore
       - name: velero
         namespace: velero
-        chart: vmware-tanzu/velero
-        version: 10.0.10
+        repoURL: https://vmware-tanzu.github.io/helm-charts
+        chart: velero
+        targetRevision: 10.0.10
         priority: "500"
 
   template:
@@ -57,16 +63,19 @@ spec:
         app.kubernetes.io/part-of: infrastructure
     spec:
       project: infrastructure
-      
-      source:
-        repoURL: https://github.com/bitsdalab/deployment.git
-        targetRevision: HEAD
-        path: argocd/applications/infrastructure/{{name}}
-        
+      sources:
+        - repoURL: "{{repoURL}}"
+          chart: "{{chart}}"
+          targetRevision: "{{targetRevision}}"
+          helm:
+            valueFiles:
+              - $values/argocd/values/{{name}}/values.yaml
+        - repoURL: https://github.com/bitsdalab/deployment.git
+          targetRevision: feature/argocd-1
+          ref: values
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{namespace}}"
-      
       syncPolicy:
         automated:
           prune: true
