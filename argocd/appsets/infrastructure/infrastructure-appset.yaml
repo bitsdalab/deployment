@@ -10,14 +10,6 @@ spec:
   generators:
   - list:
       elements:
-      # Core Infrastructure Components (order matters)
-      - name: metallb
-        namespace: metallb-system
-        repoURL: https://metallb.github.io/metallb
-        chart: metallb
-        targetRevision: 0.15.2
-        priority: "100"
-
       - name: cert-manager
         namespace: cert-manager
         repoURL: https://charts.jetstack.io

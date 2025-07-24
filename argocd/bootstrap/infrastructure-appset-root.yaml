@@ -1,10 +1,10 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: infrastructure-app
+  name: infrastructure-appset
   namespace: argocd
   labels:
-    app.kubernetes.io/name: infrastructure-app
+    app.kubernetes.io/name: infrastructure-appset
     app.kubernetes.io/part-of: bootstrap
 spec:
   project: infrastructure
