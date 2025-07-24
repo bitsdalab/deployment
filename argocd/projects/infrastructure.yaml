@@ -14,6 +14,8 @@ spec:
   - 'https://kong.github.io/charts'
   - 'https://charts.longhorn.io'
   - 'https://charts.jetstack.io'
+  - 'https://charts.min.io/'
+  - 'https://vmware-tanzu.github.io/helm-charts'
   # Destination clusters and namespaces
   destinations:
   - namespace: '*'
