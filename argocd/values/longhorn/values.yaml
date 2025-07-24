@@ -1,0 +1,145 @@
+# Longhorn Configuration
+
+# Use pre-created ServiceAccount for ArgoCD-managed install
+serviceAccount:
+  name: longhorn-service-account
+  create: false
+# Version: 1.8.2
+# Documentation: https://longhorn.io/docs/
+
+# Global configuration
+global:
+  storageClass:
+    create: true
+    name: longhorn
+    reclaimPolicy: Retain
+    allowVolumeExpansion: true
+    volumeBindingMode: Immediate
+
+# Longhorn Manager configuration
+longhornManager:
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "512Mi"
+    limits:
+      cpu: "500m"
+      memory: "1024Mi"
+  priorityClass: ""
+  tolerations: []
+  nodeSelector: {}
+
+# Longhorn Driver (CSI) configuration  
+longhornDriver:
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+  priorityClass: ""
+  tolerations: []
+
+# UI configuration (HTTPS only via LoadBalancer)
+longhornUI:
+  service:
+    type: LoadBalancer
+    # Remove HTTP NodePort for security
+    nodePort: null
+  resources:
+    requests:
+      cpu: "50m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+
+# Ingress configuration (HTTPS only)
+ingress:
+  enabled: true
+  ingressClassName: kong
+  host: longhorn.cicd.bitsb.dev
+  annotations:
+    cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+    cert-manager.io/common-name: "longhorn.cicd.bitsb.dev"
+    # Kong ingress annotations - force HTTPS
+    kong.ingress.kubernetes.io/https-redirect-status-code: "301"
+    kong.ingress.kubernetes.io/protocols: "https"
+    kong.ingress.kubernetes.io/strip-path: "false"
+    # Security headers for web UI
+    kong.ingress.kubernetes.io/headers: |
+      X-Frame-Options: DENY
+      X-Content-Type-Options: nosniff
+      X-XSS-Protection: 1; mode=block
+      Strict-Transport-Security: max-age=31536000; includeSubDomains
+  tls:
+    - secretName: longhorn-tls
+      hosts:
+        - longhorn.cicd.bitsb.dev
+
+# Default settings for production readiness
+defaultSettings:
+  # Replica settings
+  defaultReplicaCount: 2
+  replicaAutoBalance: "disabled"
+  replicaSoftAntiAffinity: true
+  replicaZoneSoftAntiAffinity: true
+  
+  # Storage settings
+  createDefaultDiskLabeledNodes: true
+  defaultDataPath: /var/lib/longhorn/
+  storageOverProvisioningPercentage: 200
+  storageMinimalAvailablePercentage: 25
+  
+  # Backup settings
+  backupstorePollInterval: 300
+  backupTargetCredentialSecret: ""
+  
+  # Performance and reliability
+  upgradeChecker: true
+  nodeDownPodDeletionPolicy: "delete-both-statefulset-and-deployment-pod"
+  removeSnapshotsDuringFilesystemTrim: "enabled"
+  
+  # Security and access
+  defaultLonghornStaticStorageClass: longhorn
+  allowRecurringJobWhileVolumeDetached: true
+  
+  # V2 Data Engine (experimental - disabled by default)
+  v2DataEngine: false
+  
+# Image settings
+image:
+  longhorn:
+    manager:
+      repository: longhornio/longhorn-manager
+      tag: v1.8.2
+    engine:
+      repository: longhornio/longhorn-engine  
+      tag: v1.8.2
+    ui:
+      repository: longhornio/longhorn-ui
+      tag: v1.8.2
+    
+# Persistence settings
+persistence:
+  defaultClass: true
+  defaultFsType: ext4
+  defaultMkfsParams: ""
+  reclaimPolicy: Retain
+  
+# Service monitor for Prometheus (if monitoring is enabled)
+serviceMonitor:
+  enabled: false
+
+# Network policies
+networkPolicies:
+  enabled: false
+
+# Pod Security Policy
+podSecurityPolicy:
+  enabled: false
+
+# OpenShift security context constraints
+openshift:
+  enabled: false

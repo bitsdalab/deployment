@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: minio-prerequisites
+  namespace: argocd
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://github.com/bitsdalab/deployment.git
+    targetRevision: feature/argocd-1
+    path: argocd/applications/infrastructure/minio
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: minio
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true

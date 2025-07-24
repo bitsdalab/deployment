@@ -1,18 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-app
+  name: infrastructure-appset
   namespace: argocd
   labels:
-    app.kubernetes.io/name: platform-app
+    app.kubernetes.io/name: infrastructure-appset
     app.kubernetes.io/part-of: bootstrap
 spec:
-  project: platform
-  
+  project: infrastructure
+
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
-    targetRevision: HEAD
-    path: argocd/appsets/platform
+    targetRevision: feature/argocd-1
+    path: argocd/appsets/infrastructure
     
   destination:
     server: https://kubernetes.default.svc

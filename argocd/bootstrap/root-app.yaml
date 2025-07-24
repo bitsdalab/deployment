@@ -10,9 +10,9 @@ spec:
   project: default
   
   source:
-    repoURL: https://github.com/bitsdalab/infra
-    targetRevision: HEAD
-    path: deployment/argocd/bootstrap
+    repoURL: https://github.com/bitsdalab/deployment.git
+    targetRevision: feature/argocd-1
+    path: argocd/bootstrap
     
   destination:
     server: https://kubernetes.default.svc

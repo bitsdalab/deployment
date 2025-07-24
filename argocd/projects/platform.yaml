@@ -10,18 +10,12 @@ spec:
   
   # Source repositories
   sourceRepos:
-  - 'https://github.com/bitsdalab/infra'
+  - 'https://github.com/bitsdalab/deployment.git'
   - 'https://argoproj.github.io/argo-helm'
   - 'https://prometheus-community.github.io/helm-charts'
   - 'https://grafana.github.io/helm-charts'
   - 'https://charts.external-secrets.io'
   - 'https://hashicorp.github.io/vault-helm'
-  
-  # Repository access
-  repositories:
-  - url: https://github.com/bitsdalab/infra
-    name: infra-repo
-    type: git
   
   # Destination clusters and namespaces
   destinations:
