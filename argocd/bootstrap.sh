@@ -10,14 +10,25 @@ echo "==================================="
 VAULT_NAMESPACE="vault"
 VAULT_UNSEAL_SECRET="vault-unseal-secret"
 
-# Prompt for Vault unseal key if not set
-if [[ -z "$VAULT_UNSEAL_SECRET" ]]; then
-    read -s -p "Vault Unseal Key (will not echo): " VAULT_UNSEAL_SECRET
-    echo
-    export VAULT_UNSEAL_SECRET
+
+# Prompt for Vault unseal keys if not set
+if [[ -z "$VAULT_UNSEAL_KEY_1" ]]; then
+    read -s -p "Unseal Key 1: " VAULT_UNSEAL_KEY_1; echo
+fi
+if [[ -z "$VAULT_UNSEAL_KEY_2" ]]; then
+    read -s -p "Unseal Key 2: " VAULT_UNSEAL_KEY_2; echo
+fi
+if [[ -z "$VAULT_UNSEAL_KEY_3" ]]; then
+    read -s -p "Unseal Key 3: " VAULT_UNSEAL_KEY_3; echo
+fi
+if [[ -z "$VAULT_UNSEAL_KEY_4" ]]; then
+    read -s -p "Unseal Key 4: " VAULT_UNSEAL_KEY_4; echo
+fi
+if [[ -z "$VAULT_UNSEAL_KEY_5" ]]; then
+    read -s -p "Unseal Key 5: " VAULT_UNSEAL_KEY_5; echo
 fi
 
-echo "🔐 Configuring Vault unseal key secret with provided key..."
+echo "🔐 Configuring Vault unseal key secret with provided keys..."
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret
@@ -29,7 +40,11 @@ metadata:
     app.kubernetes.io/part-of: infrastructure
 type: Opaque
 stringData:
-  key: $VAULT_UNSEAL_SECRET
+  key1: $VAULT_UNSEAL_KEY_1
+  key2: $VAULT_UNSEAL_KEY_2
+  key3: $VAULT_UNSEAL_KEY_3
+  key4: $VAULT_UNSEAL_KEY_4
+  key5: $VAULT_UNSEAL_KEY_5
 EOF
 echo "✅ Vault unseal key secret configured"
 

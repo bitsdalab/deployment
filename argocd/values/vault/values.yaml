@@ -60,10 +60,12 @@ server:
         - sh
         - -c
         - |
-          key=$(cat /vault/keys/key)
-          echo "Unsealing Vault with key: $key"
-          until curl --request PUT --data "{\"key\": \"$key\"}" http://localhost:8200/v1/sys/unseal; do
-            echo "Waiting for Vault API..."; sleep 2;
+          for k in /vault/keys/key*; do
+            key=$(cat "$k")
+            echo "Unsealing Vault with key: $key"
+            until curl --request PUT --data "{\"key\": \"$key\"}" http://localhost:8200/v1/sys/unseal; do
+              echo "Waiting for Vault API..."; sleep 2;
+            done
           done
       volumeMounts:
         - name: userconfig-vault-unseal-secret
