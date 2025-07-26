@@ -27,6 +27,9 @@ fi
 if [[ -z "$VAULT_UNSEAL_KEY_5" ]]; then
     read -s -p "Unseal Key 5: " VAULT_UNSEAL_KEY_5; echo
 fi
+if [[ -z "$VAULT_UNSEAL_KEY" ]]; then
+    read -s -p "Unseal Key: " VAULT_UNSEAL_KEY; echo
+fi
 
 echo "🔐 Configuring Vault unseal key secret with provided keys..."
 kubectl apply -f - <<EOF
@@ -40,11 +43,7 @@ metadata:
     app.kubernetes.io/part-of: infrastructure
 type: Opaque
 stringData:
-  key1: $VAULT_UNSEAL_KEY_1
-  key2: $VAULT_UNSEAL_KEY_2
-  key3: $VAULT_UNSEAL_KEY_3
-  key4: $VAULT_UNSEAL_KEY_4
-  key5: $VAULT_UNSEAL_KEY_5
+  key: $VAULT_UNSEAL_KEY
 EOF
 echo "✅ Vault unseal key secret configured"
 

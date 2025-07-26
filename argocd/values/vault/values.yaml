@@ -5,23 +5,20 @@
 server:
   enabled: true
   ha:
-    enabled: true
-    raft:
-      enabled: true
-      setNodeId: true
-      config: |
-        ui = true
-        listener "tcp" {
-          tls_disable = 1
-          address = "[::]:8200"
-          cluster_address = "[::]:8201"
-        }
-        storage "raft" {
-          path = "/vault/data"
-        }
-        service_registration "kubernetes" {}
-  standalone:
     enabled: false
+    raft:
+      enabled: false
+  standalone:
+    enabled: true
+    config: |
+      ui = true
+      listener "tcp" {
+        tls_disable = 1
+        address = "[::]:8200"
+      }
+      storage "file" {
+        path = "/vault/data"
+      }
   dataStorage:
     enabled: true
     size: 10Gi
@@ -60,12 +57,10 @@ server:
         - sh
         - -c
         - |
-          for k in /vault/keys/key*; do
-            key=$(cat "$k")
-            echo "Unsealing Vault with key: $key"
-            until curl --request PUT --data "{\"key\": \"$key\"}" http://localhost:8200/v1/sys/unseal; do
-              echo "Waiting for Vault API..."; sleep 2;
-            done
+          key=$(cat /vault/keys/key)
+          echo "Unsealing Vault with key: $key"
+          until curl --request PUT --data "{\"key\": \"$key\"}" http://localhost:8200/v1/sys/unseal; do
+            echo "Waiting for Vault API..."; sleep 2;
           done
       volumeMounts:
         - name: userconfig-vault-unseal-secret
@@ -75,6 +70,9 @@ server:
     - type: secret
       name: vault-unseal-secret
       secretName: vault-unseal-secret
+      items:
+        - key: key
+          path: key
   extraVolumeMounts:
     - name: userconfig-vault-unseal-secret
       mountPath: /vault/keys
