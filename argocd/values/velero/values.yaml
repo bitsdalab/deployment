@@ -18,5 +18,9 @@ configuration:
         region: minio
         s3ForcePathStyle: "true"
         s3Url: http://bits-node-2:9001
+# AWS plugin is required for S3/MinIO backends
+plugins:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.9.2 # Use the version matching your Velero install
 initContainers: []
 # Optionally, set schedules, nodeAgent, etc. as needed
