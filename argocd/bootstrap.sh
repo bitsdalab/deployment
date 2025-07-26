@@ -8,13 +8,13 @@ echo "🔑 Step 0: Vault Unseal Key Secret"
 echo "==================================="
 
 VAULT_NAMESPACE="vault"
-VAULT_UNSEAL_SECRET="vault-unseal-key"
+VAULT_UNSEAL_SECRET="vault-unseal-secret"
 
 # Prompt for Vault unseal key if not set
-if [[ -z "$VAULT_UNSEAL_KEY" ]]; then
-    read -s -p "Vault Unseal Key (will not echo): " VAULT_UNSEAL_KEY
+if [[ -z "$VAULT_UNSEAL_SECRET" ]]; then
+    read -s -p "Vault Unseal Key (will not echo): " VAULT_UNSEAL_SECRET
     echo
-    export VAULT_UNSEAL_KEY
+    export VAULT_UNSEAL_SECRET
 fi
 
 echo "🔐 Configuring Vault unseal key secret with provided key..."
@@ -29,7 +29,7 @@ metadata:
     app.kubernetes.io/part-of: infrastructure
 type: Opaque
 stringData:
-  key: $VAULT_UNSEAL_KEY
+  key: $VAULT_UNSEAL_SECRET
 EOF
 echo "✅ Vault unseal key secret configured"
 

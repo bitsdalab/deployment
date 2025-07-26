@@ -72,7 +72,7 @@ server:
   extraVolumes:
     - type: secret
       name: vault-unseal-secret
-      secretName: vault-unseal-key
+      secretName: vault-unseal-secret
   extraVolumeMounts:
     - name: userconfig-vault-unseal-secret
       mountPath: /vault/keys
