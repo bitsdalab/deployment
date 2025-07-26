@@ -5,9 +5,23 @@
 server:
   enabled: true
   ha:
-    enabled: false
-  standalone:
     enabled: true
+    raft:
+      enabled: true
+      setNodeId: true
+      config: |
+        ui = true
+        listener "tcp" {
+          tls_disable = 1
+          address = "[::]:8200"
+          cluster_address = "[::]:8201"
+        }
+        storage "raft" {
+          path = "/vault/data"
+        }
+        service_registration "kubernetes" {}
+  standalone:
+    enabled: false
   dataStorage:
     enabled: true
     size: 10Gi
@@ -53,6 +67,26 @@ ui:
 # Enable Vault Injector for Kubernetes
 injector:
   enabled: true
+
+# Example: Enable AWS KMS auto-unseal (uncomment and fill in your values)
+#server:
+#  extraEnvironmentVars:
+#    VAULT_AWSKMS_SEAL_KEY_ID: "<your-kms-key-id>"
+#    AWS_REGION: "<your-region>"
+#  extraVolumes:
+#    - type: secret
+#      name: aws-creds
+#      mountPath: /vault/userconfig/aws-creds
+#  extraVolumeMounts:
+#    - name: aws-creds
+#      mountPath: /vault/userconfig/aws-creds
+#  extraSecretEnvironmentVars:
+#    - envName: AWS_ACCESS_KEY_ID
+#      secretName: aws-creds
+#      secretKey: access_key_id
+#    - envName: AWS_SECRET_ACCESS_KEY
+#      secretName: aws-creds
+#      secretKey: secret_access_key
 
 # Enable metrics for Prometheus
 metrics:
