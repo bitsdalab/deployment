@@ -18,14 +18,5 @@ configuration:
         region: minio
         s3ForcePathStyle: "true"
         s3Url: http://bits-node-2:9001
-  volumeSnapshotLocation:
-    - name: minio-node-1
-      provider: aws
-      config:
-        region: minio
-    - name: minio-node-2
-      provider: aws
-      config:
-        region: minio
 initContainers: []
 # Optionally, set schedules, nodeAgent, etc. as needed

@@ -1,3 +1,75 @@
+# Environment Variable Setup (macOS)
+
+To automate Vault unseal and bootstrap, set your unseal key(s) as environment variables in your shell profile (e.g., `~/.zshrc` for macOS):
+
+## Standalone Mode (Single Key)
+Add to your `~/.zshrc`:
+```zsh
+export VAULT_UNSEAL_KEY="<your-unseal-key>"
+```
+Reload your shell:
+```zsh
+source ~/.zshrc
+```
+The `bootstrap.sh` script and the Vault unseal sidecar will automatically pick up this variable.
+
+## HA Mode (Multiple Keys)
+Add to your `~/.zshrc`:
+```zsh
+export VAULT_UNSEAL_KEY_1="<unseal-key-1>"
+export VAULT_UNSEAL_KEY_2="<unseal-key-2>"
+export VAULT_UNSEAL_KEY_3="<unseal-key-3>"
+export VAULT_UNSEAL_KEY_4="<unseal-key-4>"
+export VAULT_UNSEAL_KEY_5="<unseal-key-5>"
+```
+Reload your shell:
+```zsh
+source ~/.zshrc
+```
+The `bootstrap.sh` script will prompt for these if not set, and will use them to create the Kubernetes secret for Vault unseal automation.
+
+**Note:**
+- Never commit your unseal keys or root token to source control.
+- Restrict access to your shell profile and secrets.
+# Vault Unseal Automation
+
+## Automated Unseal Pattern (Standalone & HA)
+
+This deployment supports automated Vault unseal using a Kubernetes Secret and a sidecar container:
+
+- **Secret**: The unseal key(s) are stored in a Kubernetes secret (e.g., `vault-unseal-secret`).
+- **Sidecar**: A sidecar container runs alongside Vault, reads the key(s), and unseals Vault via the API.
+- **Bootstrap**: The `bootstrap.sh` script prompts for the unseal key and creates the secret automatically.
+
+### Standalone Mode (Single Key)
+- Initialize Vault with a single key: `vault operator init -key-shares=1 -key-threshold=1`
+- The secret contains one key as `key: <unseal-key>`
+- The sidecar attempts unseal and then sleeps forever:
+  ```sh
+  key=$(cat /vault/keys/key)
+  echo "Attempting to unseal Vault..."
+  while true; do
+    status=$(curl -s http://localhost:8200/v1/sys/health)
+    if echo "$status" | grep -q '"sealed":false'; then
+      echo "Vault is already unsealed. Sleeping forever."
+      sleep infinity
+    fi
+    curl --request PUT --data "{\"key\": \"$key\"}" http://localhost:8200/v1/sys/unseal
+    sleep 2
+  done
+  ```
+
+### HA Mode (Multiple Keys)
+- Initialize Vault with multiple keys (default: 5 shares, threshold 3)
+- Store all keys in the secret as `key1`, `key2`, ...
+- The sidecar loops over all keys and submits them in order
+
+### Security Note
+- The unseal key(s) are sensitive. Use RBAC to restrict access to the secret.
+- For production, consider using Vault's [auto-unseal](https://www.vaultproject.io/docs/concepts/seal) with a KMS provider instead of manual key management.
+
+### Example: Bootstrap Script
+See `argocd/bootstrap.sh` for a fully automated secret creation flow.
 # Generic Kubernetes Stack Deployment with Ansible
 
 ## Overview
