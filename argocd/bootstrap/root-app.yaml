@@ -11,7 +11,7 @@ spec:
   
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
-    targetRevision: feature/argocd-1
+    targetRevision: feature/argocd-final
     path: argocd/bootstrap
     
   destination:
