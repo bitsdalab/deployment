@@ -62,8 +62,8 @@ server:
           while true; do
             status=$(curl -s http://localhost:8200/v1/sys/health)
             if echo "$status" | grep -q '"sealed":false'; then
-              echo "Vault is already unsealed. Exiting."
-              exit 0
+              echo "Vault is already unsealed. Sleeping forever."
+              sleep infinity
             fi
             curl --request PUT --data "{\"key\": \"$key\"}" http://localhost:8200/v1/sys/unseal
             sleep 2
