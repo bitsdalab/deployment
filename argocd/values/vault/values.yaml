@@ -53,8 +53,8 @@ server:
   service:
     type: ClusterIP
 
-  extraInitContainers:
-    - name: unseal
+  extraContainers:
+    - name: unseal-sidecar
       image: curlimages/curl
       command:
         - sh
