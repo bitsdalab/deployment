@@ -16,6 +16,8 @@ spec:
   - 'https://charts.jetstack.io'
   - 'https://charts.min.io/'
   - 'https://vmware-tanzu.github.io/helm-charts'
+  - 'https://charts.external-secrets.io'
+  - 'https://helm.releases.hashicorp.com'
   # Destination clusters and namespaces
   destinations:
   - namespace: '*'
