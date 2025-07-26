@@ -10,14 +10,14 @@ configuration:
       config:
         region: minio
         s3ForcePathStyle: "true"
-        s3Url: http://bits-node-1:9001
+        s3Url: http://bits-node-1:9000
     - name: minio-node-2
       provider: aws
       bucket: velero
       config:
         region: minio
         s3ForcePathStyle: "true"
-        s3Url: http://bits-node-2:9001
+        s3Url: http://bits-node-2:9000
 # AWS plugin is required for S3/MinIO backends
 initContainers:
   - name: velero-plugin-for-aws
