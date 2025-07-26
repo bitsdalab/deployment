@@ -52,6 +52,7 @@ server:
       memory: "512Mi"
   service:
     type: ClusterIP
+
   extraInitContainers:
     - name: unseal
       image: curlimages/curl
