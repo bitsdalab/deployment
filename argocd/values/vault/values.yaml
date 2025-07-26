@@ -66,7 +66,7 @@ server:
             echo "Waiting for Vault API..."; sleep 2;
           done
       volumeMounts:
-        - name: vault-unseal-secret
+        - name: userconfig-vault-unseal-secret
           mountPath: /vault/keys
           readOnly: true
   extraVolumes:
@@ -74,7 +74,7 @@ server:
       name: vault-unseal-secret
       secretName: vault-unseal-key
   extraVolumeMounts:
-    - name: vault-unseal-secret
+    - name: userconfig-vault-unseal-secret
       mountPath: /vault/keys
       readOnly: true
 
