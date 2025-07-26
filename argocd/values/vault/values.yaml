@@ -52,6 +52,30 @@ server:
       memory: "512Mi"
   service:
     type: ClusterIP
+  extraInitContainers:
+    - name: unseal
+      image: curlimages/curl
+      command:
+        - sh
+        - -c
+        - |
+          key=$(cat /vault/keys/key)
+          echo "Unsealing Vault with key: $key"
+          until curl --request PUT --data "{\"key\": \"$key\"}" http://localhost:8200/v1/sys/unseal; do
+            echo "Waiting for Vault API..."; sleep 2;
+          done
+      volumeMounts:
+        - name: vault-unseal-secret
+          mountPath: /vault/keys
+          readOnly: true
+  extraVolumes:
+    - name: vault-unseal-secret
+      secret:
+        secretName: vault-unseal-key
+  extraVolumeMounts:
+    - name: vault-unseal-secret
+      mountPath: /vault/keys
+      readOnly: true
 
 
 ui:
