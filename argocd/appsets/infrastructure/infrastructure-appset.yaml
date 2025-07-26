@@ -31,14 +31,6 @@ spec:
         targetRevision: 1.8.2
         priority: "400"
 
-      # MinIO S3-compatible storage for Velero
-      - name: minio
-        namespace: minio
-        repoURL: https://charts.min.io/
-        chart: minio
-        targetRevision: 5.4.0
-        priority: "450"
-
       # Velero Backup/Restore
       - name: velero
         namespace: velero
@@ -46,6 +38,22 @@ spec:
         chart: velero
         targetRevision: 10.0.10
         priority: "500"
+
+      # External Secrets Operator (ESO)
+      - name: external-secrets-operator
+        namespace: external-secrets
+        repoURL: https://charts.external-secrets.io
+        chart: external-secrets
+        targetRevision: 0.9.19
+        priority: "600"
+
+      # HashiCorp Vault (official)
+      - name: vault
+        namespace: vault
+        repoURL: https://helm.releases.hashicorp.com
+        chart: vault
+        targetRevision: 0.30.0
+        priority: "700"
 
   template:
     metadata:

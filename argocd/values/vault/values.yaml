@@ -1,0 +1,58 @@
+# Minimal working values for HashiCorp Vault Helm chart
+# See: https://github.com/hashicorp/vault-helm/blob/main/values.yaml
+
+
+server:
+  enabled: true
+  ha:
+    enabled: true
+    replicas: 3
+  dataStorage:
+    enabled: true
+    size: 10Gi
+  affinity: {}
+  ingress:
+    enabled: true
+    ingressClassName: "kong"
+    labels: {}
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+      cert-manager.io/common-name: "vault.cicd.bitsb.dev"
+      konghq.com/protocols: "https"
+      konghq.com/https-redirect-status-code: "301"
+    hosts:
+      - host: vault.cicd.bitsb.dev
+        paths:
+          - /
+    tls:
+      - secretName: vault-tls
+        hosts:
+          - vault.cicd.bitsb.dev
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  service:
+    type: ClusterIP
+
+
+ui:
+  enabled: true
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+
+# Enable Vault Injector for Kubernetes
+injector:
+  enabled: true
+
+# Enable metrics for Prometheus
+metrics:
+  enabled: true

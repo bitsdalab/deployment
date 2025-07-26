@@ -2,22 +2,28 @@
 credentials:
   useSecret: true
   existingSecret: velero-minio-creds
-  secretContents:
-    cloud: |
-      [default]
-      aws_access_key_id = minioadmin
-      aws_secret_access_key = minioadmin123
 configuration:
   backupStorageLocation:
-    - name: default
+    - name: minio-node-1
       provider: aws
       bucket: velero
       config:
         region: minio
         s3ForcePathStyle: "true"
-        s3Url: http://minio.minio.svc.cluster.local:9000
+        s3Url: http://bits-node-1:9001
+    - name: minio-node-2
+      provider: aws
+      bucket: velero
+      config:
+        region: minio
+        s3ForcePathStyle: "true"
+        s3Url: http://bits-node-2:9001
   volumeSnapshotLocation:
-    - name: default
+    - name: minio-node-1
+      provider: aws
+      config:
+        region: minio
+    - name: minio-node-2
       provider: aws
       config:
         region: minio
