@@ -1,3 +1,7 @@
+
+#!/bin/bash
+set -e
+
 # Step 0: Vault Unseal Key Secret
 echo ""
 echo "🔑 Step 0: Vault Unseal Key Secret"
@@ -12,7 +16,6 @@ if [[ -z "$VAULT_UNSEAL_KEY" ]]; then
     echo
     export VAULT_UNSEAL_KEY
 fi
-
 
 echo "🔐 Configuring Vault unseal key secret with provided key..."
 kubectl apply -f - <<EOF
@@ -29,8 +32,6 @@ stringData:
   key: $VAULT_UNSEAL_KEY
 EOF
 echo "✅ Vault unseal key secret configured"
-#!/bin/bash
-set -e
 
 echo "🚀 Bootstrapping ArgoCD GitOps Platform (Development)"
 echo "====================================================="
