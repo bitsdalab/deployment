@@ -1,5 +1,31 @@
 authentik:
   secret_key: "REPLACE_ME_WITH_A_SECRET_KEY"
+  # Database configuration pointing to the included PostgreSQL
+  postgresql:
+    password: "authentikdb123"  # Change this in production
+
+# Enable and configure PostgreSQL subchart
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "authentikdb123"  # Change this in production
+    username: "authentik"
+    password: "authentikdb123"  # Change this in production
+    database: "authentik"
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+
+# Enable and configure Redis subchart  
+redis:
+  enabled: true
+  auth:
+    enabled: false  # For simplicity, enable in production
+  master:
+    persistence:
+      enabled: true
+      size: 2Gi
 
 server:
   resources:
