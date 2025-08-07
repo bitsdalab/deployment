@@ -45,17 +45,17 @@ This GitOps platform provides automated deployment and management of Kubernetes 
 - **Vault Integration**: Automated unseal and secret management
 - **TLS Automation**: Automatic certificate management with cert-manager
 - **CICD Platform**: Complete CI/CD pipeline with Authentik, Harbor, and Jenkins
-- **Infrastructure Components**: Longhorn storage, Kong ingress, cert-manager
+- **Infrastructure Components**: cert-manager, Kong ingress, Longhorn storage, External Secrets Operator
 - **Bootstrap Automation**: Single-command platform deployment
 
 ## Platform Components
 
 ### Infrastructure Layer
 - **cert-manager**: TLS certificate management with Let's Encrypt
-- **Cilium**: Cloud-native networking and security
 - **Kong**: Ingress controller with TLS termination
 - **Longhorn**: Distributed block storage
 - **Velero**: Backup and disaster recovery
+- **External Secrets Operator**: External secret management integration
 - **Vault**: Secret management and encryption
 
 ### CICD Layer
@@ -67,6 +67,7 @@ This GitOps platform provides automated deployment and management of Kubernetes 
 ## Repository Structure
 ```
 deployment/
+├── README.md                     # This documentation
 ├── argocd/
 │   ├── bootstrap.sh              # Main bootstrap script
 │   ├── applications/             # Individual applications
@@ -79,14 +80,13 @@ deployment/
 │   └── values/                   # Helm values files
 │       ├── authentik/
 │       ├── cert-manager/
+│       ├── external-secrets-operator/
 │       ├── harbor/
 │       ├── jenkins/
 │       ├── kong/
 │       ├── longhorn/
 │       ├── vault/
 │       └── velero/
-└── scripts/
-    └── backup.sh                 # Backup automation
 ```
 ## Bootstrap Deployment
 
@@ -127,7 +127,7 @@ The `bootstrap.sh` script automates the complete platform deployment:
 #### Step 3: Infrastructure Bootstrap
 - Deploys infrastructure Applications root
 - Deploys infrastructure ApplicationSets root
-- Installs: cert-manager, Cilium, Kong, Longhorn, Velero, Vault
+- Installs: cert-manager, Kong, Longhorn, Velero, External Secrets Operator, Vault
 
 #### Step 4: CICD Platform Bootstrap
 - Deploys CICD ApplicationSets root
@@ -210,7 +210,7 @@ argocd app list
 ```
 
 ### Application Structure
-- **Infrastructure Apps**: Core platform components (cert-manager, Kong, Longhorn, etc.)
+- **Infrastructure Apps**: Core platform components (cert-manager, Kong, Longhorn, Velero, External Secrets Operator, Vault)
 - **CICD Apps**: Developer platform components (Authentik, Harbor, Jenkins)
 - **ApplicationSets**: Automated deployment patterns for multiple applications
 
@@ -218,14 +218,15 @@ argocd app list
 Values files are organized by component:
 ```
 argocd/values/
-├── authentik/values.yaml       # Identity provider configuration
-├── cert-manager/values.yaml    # Certificate management
-├── harbor/values.yaml          # Container registry
-├── jenkins/values.yaml         # CI/CD server
-├── kong/values.yaml           # Ingress controller
-├── longhorn/values.yaml       # Storage system
-├── vault/values.yaml          # Secret management
-└── velero/values.yaml         # Backup system
+├── authentik/values.yaml                    # Identity provider configuration
+├── cert-manager/values.yaml                 # Certificate management
+├── external-secrets-operator/values.yaml    # External secrets integration
+├── harbor/values.yaml                       # Container registry
+├── jenkins/values.yaml                      # CI/CD server
+├── kong/values.yaml                        # Ingress controller
+├── longhorn/values.yaml                    # Storage system
+├── vault/values.yaml                       # Secret management
+└── velero/values.yaml                      # Backup system
 ```
 
 ## CICD Platform Services
@@ -496,19 +497,14 @@ kubectl -n velero get backup
 - Storage class and persistent volume status
 - Service endpoint reachability and response times
 
-### Monitoring Integration Points
+### Future Integration Points
 Ready for observability stack integration:
 - **Prometheus**: Metrics collection from all components
 - **Grafana**: Visualization and alerting dashboards
 - **Loki**: Centralized log aggregation
 - **Tempo**: Distributed tracing capabilities
 
-### Service Dashboards
-- **ArgoCD**: GitOps deployment status and application health
-- **Harbor**: Registry usage, vulnerability scan results
-- **Jenkins**: Build statistics and job success rates
-- **Kong**: Ingress traffic metrics and response times
-- **Longhorn**: Storage utilization and performance metrics
+**Note**: Observability stack is not currently deployed but the platform is ready for integration.
 
 ## Platform Customization
 
@@ -529,8 +525,6 @@ env:
   router_flavor: traditional
 proxy:
   type: LoadBalancer
-  annotations:
-    metallb.universe.tf/loadBalancerIPs: "192.168.1.240"
 ```
 
 ### ApplicationSet Patterns
@@ -540,15 +534,16 @@ The platform uses ApplicationSets for automated application management:
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: infrastructure-appset
+  name: infrastructure
 spec:
   generators:
   - list:
       elements:
       - name: cert-manager
         namespace: cert-manager
+        repoURL: https://charts.jetstack.io
         chart: cert-manager
-        version: "v1.13.3"
+        targetRevision: v1.16.2
   template:
     # Application template with Helm source
 ```
