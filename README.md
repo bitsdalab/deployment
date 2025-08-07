@@ -39,6 +39,8 @@ export VAULT_UNSEAL_KEY="<your-single-unseal-key>"
 ## Overview
 This GitOps platform provides automated deployment and management of Kubernetes infrastructure and CICD components using ArgoCD ApplicationSets and Applications.
 
+**Architecture**: ArgoCD is deployed and managed via the [bitsdalab/infra](https://github.com/bitsdalab/infra) repository using Ansible playbooks. This repository contains the GitOps configurations and bootstrap scripts for the platform components.
+
 ## Key Features ✨
 - **GitOps Workflow**: Declarative infrastructure and application management
 - **ArgoCD ApplicationSets**: Automated application deployment patterns
@@ -59,10 +61,10 @@ This GitOps platform provides automated deployment and management of Kubernetes 
 - **Vault**: Secret management and encryption
 
 ### CICD Layer
+- **ArgoCD**: GitOps continuous deployment (managed via [infra repository](https://github.com/bitsdalab/infra))
 - **Authentik**: Identity provider and SSO
 - **Harbor**: Container registry with security scanning
 - **Jenkins**: CI/CD automation server
-- **ArgoCD**: GitOps continuous deployment
 
 ## Repository Structure
 ```
@@ -92,12 +94,18 @@ deployment/
 
 ### Prerequisites
 1. **Kubernetes Cluster**: Running cluster with kubectl access
-2. **ArgoCD**: Installed and accessible
+2. **ArgoCD**: Deployed via the [infra repository](https://github.com/bitsdalab/infra) playbook
 3. **Environment Variables**: Set VAULT_UNSEAL_KEY, GITHUB_USERNAME, GITHUB_TOKEN
+
+**Note**: ArgoCD itself is managed separately from the [bitsdalab/infra](https://github.com/bitsdalab/infra) repository using Ansible playbooks. This repository assumes ArgoCD is already installed and accessible.
 
 ### Quick Start
 ```bash
-# Clone the repository
+# 1. First, deploy ArgoCD using the infra repository
+git clone https://github.com/bitsdalab/infra.git
+# Follow the infra repository instructions to deploy ArgoCD
+
+# 2. Then, bootstrap the GitOps platform
 git clone https://github.com/bitsdalab/deployment.git
 cd deployment
 
@@ -210,6 +218,7 @@ argocd app list
 ```
 
 ### Application Structure
+- **ArgoCD**: Deployed separately via [infra repository](https://github.com/bitsdalab/infra)
 - **Infrastructure Apps**: Core platform components (cert-manager, Kong, Longhorn, Velero, External Secrets Operator, Vault)
 - **CICD Apps**: Developer platform components (Authentik, Harbor, Jenkins)
 - **ApplicationSets**: Automated deployment patterns for multiple applications
@@ -601,10 +610,14 @@ Steps for migrating to new cluster:
 
 This GitOps platform provides a production-ready, automated approach to Kubernetes infrastructure and CICD management that:
 
-- **Simplifies Deployment**: Single-command bootstrap for complete platform
+- **Simplifies Deployment**: Single-command bootstrap for complete platform (after ArgoCD deployment via infra repo)
 - **Ensures Consistency**: GitOps workflow maintains declarative state
 - **Provides Security**: Comprehensive security controls and secret management
 - **Enables Scalability**: Modular architecture supports growth and customization
 - **Facilitates Operations**: Built-in monitoring, backup, and troubleshooting capabilities
+
+**Deployment Flow**:
+1. **Infrastructure Setup**: Use [bitsdalab/infra](https://github.com/bitsdalab/infra) to deploy ArgoCD and cluster foundations
+2. **Platform Bootstrap**: Use this repository to deploy the complete GitOps platform components
 
 The platform serves as a solid foundation for any organization looking to implement modern DevOps practices with Kubernetes, providing both infrastructure services and a complete CICD pipeline that can be customized and extended to meet specific requirements.
