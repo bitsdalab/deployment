@@ -1,0 +1,49 @@
+# Harbor Container Registry Configuration
+expose:
+  type: ingress
+  tls:
+    enabled: true
+    certSource: secret
+    secret:
+      secretName: harbor-tls
+  ingress:
+    hosts:
+      core: harbor.cicd.bitsb.dev
+    className: kong
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+
+# External URL for Harbor
+externalURL: https://harbor.cicd.bitsb.dev
+
+# Admin password (change this in production)
+harborAdminPassword: "Harbor12345"
+
+# Resource requests and limits
+core:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+registry:
+  registry:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+# Persistence
+persistence:
+  enabled: true
+  persistentVolumeClaim:
+    registry:
+      size: 20Gi
+    database:
+      size: 5Gi

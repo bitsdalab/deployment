@@ -41,9 +41,8 @@ spec:
     bucket: velero
   config:
     region: us-east-1
-    s3Url: http://bits-node-2:9000
+    s3Url: http://192.168.1.52:9000
     insecureSkipTLSVerify: "true"
-    insecure: "true"
   credential:
     name: velero-minio-creds
     key: cloud
@@ -59,12 +58,11 @@ metadata:
 spec:
   provider: aws
   objectStorage:
-    bucket: velero-bits-node-2
+    bucket: velero
   config:
     region: us-east-1
-    s3Url: http://bits-node-2:9000
+    s3Url: http://192.168.1.53:9000
     insecureSkipTLSVerify: "true"
-    insecure: "true"
   credential:
     name: velero-minio-creds
     key: cloud
@@ -88,7 +86,7 @@ spec:
   template:
     includedNamespaces:
       - '*'
-    ttl: 240h
+    ttl: 360h
     storageLocation: minio-node-1
     snapshotVolumes: false
 ```
@@ -105,7 +103,7 @@ spec:
   template:
     includedNamespaces:
       - '*'
-    ttl: 240h
+    ttl: 360h
     storageLocation: minio-node-2
     snapshotVolumes: false
 ```

@@ -1,0 +1,40 @@
+authentik:
+  secret_key: "REPLACE_ME_WITH_A_SECRET_KEY"
+
+server:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  ingress:
+    enabled: true
+    ingressClassName: kong
+    hosts:
+      - authentik.cicd.bitsb.dev
+    tls:
+      - secretName: authentik-tls
+        hosts:
+          - authentik.cicd.bitsb.dev
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+
+worker:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+      cert-manager.io/common-name: "authentik.cicd.bitsb.dev"
+      kong.ingress.kubernetes.io/https-redirect-status-code: "301"
+      kong.ingress.kubernetes.io/protocols: "https"
+      kong.ingress.kubernetes.io/strip-path: "false"
+      kong.ingress.kubernetes.io/headers: |
+        X-Frame-Options: DENY
+        X-Content-Type-Options: nosniff
+        X-XSS-Protection: 1; mode=block
+        Strict-Transport-Security: max-age=31536000; includeSubDomains
