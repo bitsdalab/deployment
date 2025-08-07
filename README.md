@@ -47,7 +47,7 @@ This GitOps platform provides automated deployment and management of Kubernetes 
 - **Vault Integration**: Automated unseal and secret management
 - **TLS Automation**: Automatic certificate management with cert-manager
 - **CICD Platform**: Complete CI/CD pipeline with Authentik, Harbor, and Jenkins
-- **Infrastructure Components**: cert-manager, Kong ingress, Longhorn storage, External Secrets Operator
+- **Infrastructure Components**: cert-manager, Kong ingress, Longhorn storage, External Secrets Operator, Cilium LoadBalancer config
 - **Bootstrap Automation**: Single-command platform deployment
 
 ## Platform Components
@@ -59,6 +59,7 @@ This GitOps platform provides automated deployment and management of Kubernetes 
 - **Velero**: Backup and disaster recovery
 - **External Secrets Operator**: External secret management integration
 - **Vault**: Secret management and encryption
+- **Cilium LoadBalancer Configuration**: L2 announcement policy and IP pool (CNI managed via infra repo)
 
 ### CICD Layer
 - **ArgoCD**: GitOps continuous deployment (managed via [infra repository](https://github.com/bitsdalab/infra))
@@ -74,11 +75,24 @@ deployment/
 │   ├── bootstrap.sh              # Main bootstrap script
 │   ├── applications/             # Individual applications
 │   │   └── infrastructure/       # Infrastructure apps
+│   │       ├── cert-manager/     # Certificate management configs
+│   │       ├── cilium/           # Cilium L2 and LoadBalancer configs
+│   │       ├── longhorn/         # Storage configurations
+│   │       ├── velero/           # Backup configurations
+│   │       ├── cert-manager-ca-application.yaml
+│   │       ├── cilium-application.yaml
+│   │       ├── longhorn-application.yaml
+│   │       └── velero-application.yaml
 │   ├── appsets/                  # ApplicationSets
 │   │   ├── infrastructure/       # Infrastructure AppSet
 │   │   └── cicd/                 # CICD AppSet
 │   ├── bootstrap/                # Bootstrap root applications
+│   │   ├── infrastructure-apps-root.yaml
+│   │   ├── infrastructure-appset-root.yaml
+│   │   └── cicd-appset-root.yaml
 │   ├── projects/                 # ArgoCD projects (RBAC)
+│   │   ├── infrastructure.yaml
+│   │   └── cicd.yaml
 │   └── values/                   # Helm values files
 │       ├── authentik/
 │       ├── cert-manager/
@@ -136,6 +150,7 @@ The `bootstrap.sh` script automates the complete platform deployment:
 - Deploys infrastructure Applications root
 - Deploys infrastructure ApplicationSets root
 - Installs: cert-manager, Kong, Longhorn, Velero, External Secrets Operator, Vault
+- Configures: Cilium LoadBalancer IP pool and L2 announcement policy
 
 #### Step 4: CICD Platform Bootstrap
 - Deploys CICD ApplicationSets root
@@ -151,6 +166,9 @@ The `bootstrap.sh` script automates the complete platform deployment:
 Add these entries to your `/etc/hosts` file:
 ```
 # Replace <CLUSTER_IP> with your actual cluster IP
+<CLUSTER_IP>    argocd.cicd.bitsb.dev
+<CLUSTER_IP>    longhorn.cicd.bitsb.dev
+<CLUSTER_IP>    vault.cicd.bitsb.dev
 <CLUSTER_IP>    authentik.cicd.bitsb.dev
 <CLUSTER_IP>    harbor.cicd.bitsb.dev
 <CLUSTER_IP>    jenkins.cicd.bitsb.dev
@@ -162,6 +180,9 @@ kubectl get svc -n kong kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0]
 ```
 
 ### Default Credentials
+- **ArgoCD**: https://argocd.cicd.bitsb.dev (admin / <set during infra deployment>)
+- **Longhorn**: https://longhorn.cicd.bitsb.dev (no authentication by default)
+- **Vault**: https://vault.cicd.bitsb.dev (requires initialization and unseal)
 - **Harbor**: https://harbor.cicd.bitsb.dev (admin / Harbor12345)
 - **Jenkins**: https://jenkins.cicd.bitsb.dev (admin / admin123)
 - **Authentik**: https://authentik.cicd.bitsb.dev (setup required on first access)
@@ -199,6 +220,42 @@ export VAULT_UNSEAL_KEY="<your-unseal-key>"
 - Consider Vault's [auto-unseal](https://www.vaultproject.io/docs/concepts/seal) for production
 - Regularly rotate and backup unseal keys securely
 
+## Cilium LoadBalancer Configuration
+
+### Overview
+While Cilium CNI is deployed via the [infra repository](https://github.com/bitsdalab/infra), this repository manages Cilium's LoadBalancer configuration:
+
+### LoadBalancer Components
+- **L2 Announcement Policy**: Enables L2 advertisement for LoadBalancer services
+- **IP Pool Configuration**: Defines available IP range (192.168.1.100/28)
+- **Service Integration**: Automatic IP assignment for Kong and other LoadBalancer services
+
+### Configuration Files
+```bash
+# L2 announcement policy
+argocd/applications/infrastructure/cilium/l2-policy.yaml
+
+# LoadBalancer IP pool
+argocd/applications/infrastructure/cilium/lb-pool.yaml
+
+# Application definition
+argocd/applications/infrastructure/cilium-application.yaml
+```
+
+### LoadBalancer Operations
+```bash
+# Check LoadBalancer IP pool
+kubectl get ciliumloadbalancerippool
+
+# Check L2 announcement policy  
+kubectl get ciliuml2announcementpolicy
+
+# Monitor LoadBalancer service IPs
+kubectl get svc -A --field-selector spec.type=LoadBalancer
+```
+
+**Note**: Cilium CNI installation and core networking is managed by the infra repository. This repository only configures the LoadBalancer functionality.
+
 ## GitOps Management
 
 ### ArgoCD Applications
@@ -219,7 +276,7 @@ argocd app list
 
 ### Application Structure
 - **ArgoCD**: Deployed separately via [infra repository](https://github.com/bitsdalab/infra)
-- **Infrastructure Apps**: Core platform components (cert-manager, Kong, Longhorn, Velero, External Secrets Operator, Vault)
+- **Infrastructure Apps**: Core platform components (cert-manager, Kong, Longhorn, Velero, External Secrets Operator, Vault) + Cilium LoadBalancer config
 - **CICD Apps**: Developer platform components (Authentik, Harbor, Jenkins)
 - **ApplicationSets**: Automated deployment patterns for multiple applications
 
@@ -275,6 +332,9 @@ kubectl get pods -A
 # Check ArgoCD applications
 kubectl get applications -n argocd
 
+# Check LoadBalancer services and IPs
+kubectl get svc -A --field-selector spec.type=LoadBalancer
+
 # Check ingress resources
 kubectl get ingress -A
 
@@ -323,10 +383,10 @@ openssl s_client -connect authentik.cicd.bitsb.dev:443 -servername authentik.cic
 - Automated Vault unseal with secure key storage
 
 ### Network Security
-- Kong ingress provides secure external access
-- Internal service communication via cluster DNS
-- TLS encryption for all inter-service communication
-- Longhorn storage encryption at rest
+- **Kong ingress**: Provides secure external access with TLS termination
+- **Internal service communication**: via cluster DNS with TLS encryption
+- **Longhorn storage**: encryption at rest for persistent volumes
+- **LoadBalancer services**: External access managed by cluster CNI
 
 ## Backup Strategy
 
