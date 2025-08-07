@@ -28,49 +28,49 @@ controller:
   # Java options for better performance
   javaOpts: "-Xmx1g -XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport"
 
-  # Install essential plugins
+  # Install essential plugins (latest versions)
   installPlugins:
     # Core Pipeline & Workflow
-    - kubernetes:4275.v80f6b_e9eb_b_93
-    - workflow-aggregator:596.v8c21c963d92d
-    - pipeline-stage-view:2.34
+    - kubernetes
+    - workflow-aggregator
+    - pipeline-stage-view
     
     # Source Control
-    - git:5.5.2
-    - github:1.40.0
-    - github-branch-source:1791.vb_11b_ce88ac55
+    - git
+    - github
+    - github-branch-source
     
     # Build & Package Management
-    - maven-plugin:3.23
-    - gradle:2.12
-    - nodejs:1.6.1
-    - docker-workflow:580.vc0c340686b_54
+    - maven-plugin
+    - gradle
+    - nodejs
+    - docker-workflow
     
     # Testing & Quality
-    - junit:1282.v65ffb_fb_9d29e
-    - sonar:2.17.2
-    - warnings-ng:12.6.0
+    - junit
+    - sonar
+    - warnings-ng
     
     # Security & Secrets
-    - credentials:1371.vfee6b_095f0a_3
-    - credentials-binding:681.vf91669a_32e45
-    - kubernetes-credentials:131.v6b_2a_3c3b_a_96d
+    - credentials
+    - credentials-binding
+    - kubernetes-credentials
     
     # Deployment & Infrastructure
-    - kubernetes-cli:1.12.1
-    - helm:434.ve32c9b_1c8780
+    - kubernetes-cli
+    - helm
     
     # Notifications
-    - slack:695.v51113f0f631a_
+    - slack
     
     # Monitoring & Utilities
-    - build-timeout:1.32
-    - timestamper:1.27
-    - ws-cleanup:0.46
+    - build-timeout
+    - timestamper
+    - ws-cleanup
     
     # UI & User Experience
-    - configuration-as-code:1847.ve8d52eb_b_e4a_b_
-    - blueocean:1.27.14
+    - configuration-as-code
+    - blueocean
 
 # Persistence
 persistence:
