@@ -3,6 +3,22 @@ authentik:
   # Database configuration pointing to the included PostgreSQL
   postgresql:
     password: "authentikdb123"  # Change this in production
+    user: "authentik"
+    name: "authentik"
+    host: "authentik-postgresql"
+    port: 5432
+
+# Global environment variables for database connection
+global:
+  env:
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      value: "authentikdb123"
+    - name: AUTHENTIK_POSTGRESQL__USER
+      value: "authentik"
+    - name: AUTHENTIK_POSTGRESQL__NAME
+      value: "authentik"
+    - name: AUTHENTIK_POSTGRESQL__HOST
+      value: "authentik-postgresql"
 
 # Enable and configure PostgreSQL subchart
 postgresql:
