@@ -62,6 +62,9 @@ server:
           - authentik.cicd.bitsb.dev
     annotations:
       cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+    # INITIAL SETUP: https://authentik.cicd.bitsb.dev/if/flow/initial-setup/
+    # Default admin user: akadmin (set password during initial setup)
+    # Must include trailing slash in setup URL or you'll get "Not Found" error
 
 worker:
   resources:
