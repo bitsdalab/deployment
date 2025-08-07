@@ -58,7 +58,6 @@ controller:
     
     # Deployment & Infrastructure
     - kubernetes-cli
-    - helm
     
     # Notifications
     - slack
