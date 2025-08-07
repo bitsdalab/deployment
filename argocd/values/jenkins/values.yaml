@@ -1,6 +1,8 @@
 # Jenkins CI/CD Configuration
 controller:
-  adminPassword: "admin123"  # Change this in production
+  # Updated admin configuration format
+  admin:
+    password: "admin123"  # Change this in production
   
   # Resource requests and limits
   resources:
