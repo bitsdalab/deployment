@@ -73,6 +73,7 @@ spec:
         - PruneLast=true
         - Validate=true
         - SkipDryRunOnMissingResource=true
+        - helm.skipTLSVerify=true
         retry:
           limit: 3
           backoff:
