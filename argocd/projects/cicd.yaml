@@ -14,6 +14,7 @@ spec:
   - 'https://goauthentik.github.io/helm'
   - 'https://helm.goharbor.io'
   - 'https://charts.jenkins.io'
+  - 'https://charts.squidfunk.github.io/mkdocs-material/'
   
   # Destination clusters and namespaces
   destinations:
