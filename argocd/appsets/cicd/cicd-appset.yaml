@@ -33,6 +33,14 @@ spec:
         chart: jenkins
         targetRevision: 5.8.74
         priority: "300"
+
+      # Documentation (MkDocs Material)
+      - name: mkdocs
+        namespace: mkdocs
+        repoURL: https://charts.squidfunk.github.io/mkdocs-material/
+        chart: mkdocs-material
+        targetRevision: latest
+        priority: "400"
   template:
     metadata:
       name: "{{name}}"
@@ -47,7 +55,7 @@ spec:
           targetRevision: "{{targetRevision}}"
           helm:
             valueFiles:
-              - $values/argocd/values/{{name}}/values.yaml
+              - $values/argocd/values/mkdocs/values.yaml
         - repoURL: https://github.com/bitsdalab/deployment.git
           targetRevision: feature/argocd-final
           ref: values

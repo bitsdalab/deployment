@@ -1,0 +1,31 @@
+# MkDocs Material values.yaml
+image:
+  repository: squidfunk/mkdocs-material
+  tag: latest
+service:
+  type: ClusterIP
+  port: 8000
+ingress:
+  enabled: true
+  hosts:
+    - host: docs.cicd.bitsb.dev
+      paths:
+        - /
+  tls:
+    - hosts:
+        - docs.cicd.bitsb.dev
+      secretName: mkdocs-tls
+extraEnv:
+  - name: ENABLE_MERMAID
+    value: "true"
+  - name: ENABLE_KROKI
+    value: "true"
+  - name: ENABLE_DIAGRAMS_AS_CODE
+    value: "true"
+resources:
+  limits:
+    cpu: 100m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 128Mi
