@@ -39,7 +39,7 @@ spec:
         namespace: mkdocs
         repoURL: https://charts.squidfunk.github.io/mkdocs-material/
         chart: mkdocs-material
-        targetRevision: latest
+        targetRevision: 9.6.16
         priority: "400"
   template:
     metadata:
