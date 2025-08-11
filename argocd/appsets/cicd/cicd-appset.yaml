@@ -55,7 +55,7 @@ spec:
           targetRevision: "{{targetRevision}}"
           helm:
             valueFiles:
-              - $values/argocd/values/outline/values.yaml
+              - $values/argocd/values/{{name}}/values.yaml
         - repoURL: https://github.com/bitsdalab/deployment.git
           targetRevision: feature/argocd-final
           ref: values
