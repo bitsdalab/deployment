@@ -28,3 +28,8 @@ postgresql:
   enabled: true
   auth:
     postgresPassword: "CHANGEME"
+
+redis:
+  enabled: true
+  auth:
+    password: "CHANGEME"
