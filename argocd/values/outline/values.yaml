@@ -10,7 +10,7 @@ ingress:
   hosts:
     - host: outline.cicd.bitsb.dev
       paths:
-        - /
+        - path: /
   tls:
     - hosts:
         - outline.cicd.bitsb.dev
