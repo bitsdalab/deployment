@@ -34,12 +34,12 @@ spec:
         targetRevision: 5.8.74
         priority: "300"
 
-      # Documentation (MkDocs Material)
-      - name: mkdocs
-        namespace: mkdocs
-        repoURL: https://charts.squidfunk.github.io/mkdocs-material/
-        chart: mkdocs-material
-        targetRevision: 9.6.16
+      # Documentation (Outline)
+      - name: outline
+        namespace: outline
+        repoURL: https://community-charts.github.io/helm-charts/
+        chart: outline
+        targetRevision: 0.6.2
         priority: "400"
   template:
     metadata:
@@ -55,7 +55,7 @@ spec:
           targetRevision: "{{targetRevision}}"
           helm:
             valueFiles:
-              - $values/argocd/values/mkdocs/values.yaml
+              - $values/argocd/values/outline/values.yaml
         - repoURL: https://github.com/bitsdalab/deployment.git
           targetRevision: feature/argocd-final
           ref: values

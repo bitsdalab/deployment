@@ -1,0 +1,24 @@
+## Outline values.yaml
+image:
+  repository: outlinewiki/outline
+  tag: latest
+service:
+  type: ClusterIP
+  port: 3000
+ingress:
+  enabled: true
+  hosts:
+    - host: outline.cicd.bitsb.dev
+      paths:
+        - /
+  tls:
+    - hosts:
+        - outline.cicd.bitsb.dev
+      secretName: outline-tls
+resources:
+  limits:
+    cpu: 200m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
