@@ -29,14 +29,6 @@ resources:
     cpu: 100m
     memory: 256Mi
 
-env:
-  - name: "DATABASE_URL"
-    value: "postgresql://outline:CHANGEME@localhost:5432/outline"
-  - name: "REDIS_URL"
-    value: "redis://:CHANGEME@localhost:6379"
-  - name: "SECRET_KEY"
-    value: "CHANGEME"
-
 postgresql:
   enabled: true
   auth:
