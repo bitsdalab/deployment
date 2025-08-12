@@ -1,0 +1,23 @@
+query:
+  replicaCount: 2
+  resources:
+    requests:
+      cpu: 200m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 1024Mi
+  ingress:
+    enabled: true
+    ingressClassName: kong
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+      cert-manager.io/common-name: "thanos.ops.bitsb.dev"
+      konghq.com/protocols: "https"
+      konghq.com/https-redirect-status-code: "301"
+    hosts:
+      - thanos.ops.bitsb.dev
+    tls:
+      - secretName: thanos-tls
+        hosts:
+          - thanos.ops.bitsb.dev

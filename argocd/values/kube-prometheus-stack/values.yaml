@@ -1,0 +1,48 @@
+grafana:
+  replicas: 2
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  ingress:
+    enabled: true
+    ingressClassName: kong
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+      cert-manager.io/common-name: "grafana.ops.bitsb.dev"
+      konghq.com/protocols: "https"
+      konghq.com/https-redirect-status-code: "301"
+    hosts:
+      - grafana.ops.bitsb.dev
+    tls:
+      - secretName: grafana-tls
+        hosts:
+          - grafana.ops.bitsb.dev
+prometheus:
+  prometheusSpec:
+    replicas: 2
+    resources:
+      requests:
+        cpu: 200m
+        memory: 512Mi
+      limits:
+        cpu: 1000m
+        memory: 1024Mi
+    serviceMonitorSelectorNilUsesHelmValues: false
+  ingress:
+    enabled: false
+alertmanager:
+  alertmanagerSpec:
+    replicas: 2
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+  ingress:
+    enabled: false
