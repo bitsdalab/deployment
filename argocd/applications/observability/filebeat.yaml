@@ -15,27 +15,19 @@ spec:
     - type: container
       paths:
         - /var/log/containers/*.log
-  deployment:
-    replicas: 2
-    resources:
-      requests:
-        cpu: 100m
-        memory: 256Mi
-      limits:
-        cpu: 500m
-        memory: 512Mi
-  podTemplate:
-    spec:
-      serviceAccountName: filebeat
-      securityContext:
-        runAsUser: 0
-        fsGroup: 0
-      volumes:
-      - name: varlogcontainers
-        hostPath:
-          path: /var/log/containers
-      containers:
-      - name: filebeat
-        volumeMounts:
+  daemonSet:
+    podTemplate:
+      spec:
+        serviceAccountName: filebeat
+        securityContext:
+          runAsUser: 0
+          fsGroup: 0
+        volumes:
         - name: varlogcontainers
-          mountPath: /var/log/containers
+          hostPath:
+            path: /var/log/containers
+        containers:
+        - name: filebeat
+          volumeMounts:
+          - name: varlogcontainers
+            mountPath: /var/log/containers
