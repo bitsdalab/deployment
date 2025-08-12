@@ -1,0 +1,42 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: cicd
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: cicd
+spec:
+  description: CI/CD platform components (Authentik, Harbor, Jenkins)
+  
+  # Source repositories
+  sourceRepos:
+  - 'https://github.com/bitsdalab/deployment.git'
+  - 'https://goauthentik.github.io/helm'
+  - 'https://helm.goharbor.io'
+  - 'https://charts.jenkins.io'
+  - 'https://charts.squidfunk.github.io/mkdocs-material/'
+  - 'https://community-charts.github.io/helm-charts/'
+  
+  # Destination clusters and namespaces
+  destinations:
+  - namespace: '*'
+    server: '*'
+  
+  clusterResourceWhitelist:
+  # Allow all cluster-scoped resources (lock down for prod)
+  - group: '*'
+    kind: '*'
+  namespaceResourceWhitelist:
+  # Allow all namespace-scoped resources
+  - group: '*'
+    kind: '*'
+  
+  # Roles for accessing the project
+  roles:
+  - name: admin
+    description: Full access to CICD project
+    policies:
+    - p, proj:cicd:admin, applications, *, cicd/*, allow
+    - p, proj:cicd:admin, repositories, *, *, allow
+    groups:
+    - system:masters

@@ -1,0 +1,82 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: cicd
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: cicd-appset
+    app.kubernetes.io/part-of: cicd
+spec:
+  generators:
+  - list:
+      elements:
+      # Authentik (SSO/Identity Provider)
+      - name: authentik
+        namespace: authentik
+        repoURL: https://goauthentik.github.io/helm
+        chart: authentik
+        targetRevision: 2025.6.4
+        priority: "100"
+
+      # Harbor (Container Registry)
+      - name: harbor
+        namespace: harbor
+        repoURL: https://helm.goharbor.io
+        chart: harbor
+        targetRevision: 1.17.1
+        priority: "200"
+
+      # Jenkins (CI/CD)
+      - name: jenkins
+        namespace: jenkins
+        repoURL: https://charts.jenkins.io
+        chart: jenkins
+        targetRevision: 5.8.74
+        priority: "300"
+
+      # Documentation (Outline)
+      - name: outline
+        namespace: outline
+        repoURL: https://community-charts.github.io/helm-charts/
+        chart: outline
+        targetRevision: 0.6.2
+        priority: "400"
+  template:
+    metadata:
+      name: "{{name}}"
+      labels:
+        app.kubernetes.io/name: "{{name}}"
+        app.kubernetes.io/part-of: cicd
+    spec:
+      project: cicd
+      sources:
+        - repoURL: "{{repoURL}}"
+          chart: "{{chart}}"
+          targetRevision: "{{targetRevision}}"
+          helm:
+            valueFiles:
+              - $values/argocd/values/{{name}}/values.yaml
+        - repoURL: https://github.com/bitsdalab/deployment.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+        - Validate=true
+        - SkipDryRunOnMissingResource=true
+        - helm.skipTLSVerify=true
+        retry:
+          limit: 3
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m

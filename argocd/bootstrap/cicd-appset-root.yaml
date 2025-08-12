@@ -1,18 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: platform-app
+  name: cicd-appset
   namespace: argocd
   labels:
-    app.kubernetes.io/name: platform-app
+    app.kubernetes.io/name: cicd-appset
     app.kubernetes.io/part-of: bootstrap
 spec:
-  project: platform
-  
+  project: cicd
+
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
-    targetRevision: HEAD
-    path: argocd/appsets/platform
+    targetRevision: main
+    path: argocd/appsets/cicd
     
   destination:
     server: https://kubernetes.default.svc
