@@ -84,8 +84,10 @@ echo "=========================================="
 #setup ArgoCD projects
 echo "Applying ArgoCD projects..."
 
+# Apply ArgoCD projects
 kubectl apply -f argocd/projects/infrastructure.yaml
 kubectl apply -f argocd/projects/cicd.yaml
+kubectl apply -f argocd/projects/observability.yaml
 #kubectl apply -f argocd/projects/platform.yaml
 #kubectl apply -f argocd/projects/workloads.yaml
 
@@ -101,6 +103,7 @@ kubectl apply -f argocd/bootstrap/infrastructure-apps-root.yaml
 
 # Apply ApplicationSet root (deploys all ApplicationSets)
 kubectl apply -f argocd/bootstrap/infrastructure-appset-root.yaml
+kubectl apply -f argocd/bootstrap/observability-appset-root.yaml
 
 echo "✅ Infrastructure Applications and ApplicationSets created"
 
@@ -129,6 +132,8 @@ echo "<CLUSTER_IP>    vault.cicd.bitsb.dev"
 echo "<CLUSTER_IP>    authentik.cicd.bitsb.dev"
 echo "<CLUSTER_IP>    harbor.cicd.bitsb.dev"
 echo "<CLUSTER_IP>    jenkins.cicd.bitsb.dev"
+echo "<CLUSTER_IP>    grafana.ops.bitsb.dev"
+echo "<CLUSTER_IP>    thanos.ops.bitsb.dev"
 echo ""
 
 echo "🔍 Find your cluster IP with:"
