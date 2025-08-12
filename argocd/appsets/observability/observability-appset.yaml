@@ -31,13 +31,6 @@ spec:
         chart: kube-prometheus-stack
         targetRevision: 58.3.0
         priority: "200"
-      # Beats (Filebeat): Ships logs and metrics to Elasticsearch
-      - name: beats
-        namespace: observability
-        repoURL: https://helm.elastic.co
-        chart: filebeat
-        targetRevision: 8.12.2
-        priority: "300"
       # Zipkin: Distributed tracing for microservices
       - name: zipkin
         namespace: observability

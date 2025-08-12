@@ -118,6 +118,7 @@ echo ""
 echo "📋 Step 3: Starting GitOps Bootstrap"
 echo "==================================="
 
+
 # Apply Applications root (deploys all Applications)
 kubectl apply -f argocd/bootstrap/infrastructure-apps-root.yaml
 
@@ -125,7 +126,11 @@ kubectl apply -f argocd/bootstrap/infrastructure-apps-root.yaml
 kubectl apply -f argocd/bootstrap/infrastructure-appset-root.yaml
 kubectl apply -f argocd/bootstrap/observability-appset-root.yaml
 
-echo "✅ Infrastructure Applications and ApplicationSets created"
+
+# Apply all observability application manifests
+kubectl apply -f argocd/applications/observability/ || true
+
+echo "✅ Infrastructure Applications, ApplicationSets, and ECK Elastic resources created"
 
 # Step 4: Deploy CICD Platform
 echo ""
