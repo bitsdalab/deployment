@@ -1,10 +1,12 @@
-## Outline values.yaml
+
 image:
   repository: outlinewiki/outline
   tag: latest
+
 service:
   type: ClusterIP
   port: 3000
+
 ingress:
   enabled: true
   hosts:
@@ -16,6 +18,9 @@ ingress:
     - hosts:
         - outline.cicd.bitsb.dev
       secretName: outline-tls
+  annotations:
+    cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+
 resources:
   limits:
     cpu: 200m
@@ -24,12 +29,23 @@ resources:
     cpu: 100m
     memory: 256Mi
 
+env:
+  - name: "DATABASE_URL"
+    value: "postgresql://outline:CHANGEME@localhost:5432/outline"
+  - name: "REDIS_URL"
+    value: "redis://:CHANGEME@localhost:6379"
+  - name: "SECRET_KEY"
+    value: "CHANGEME"
+
 postgresql:
   enabled: true
   auth:
-    postgresPassword: "CHANGEME"
+    username: outline
+    password: CHANGEME
+    database: outline
+    postgresPassword: CHANGEME
 
 redis:
   enabled: true
   auth:
-    password: "CHANGEME"
+    password: CHANGEME
