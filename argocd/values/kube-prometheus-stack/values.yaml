@@ -1,7 +1,10 @@
 grafana:
-  env:
-    GF_SERVER_ROOT_URL: "https://grafana.ops.bitsb.dev"
-    GF_SERVER_DOMAIN: "grafana.ops.bitsb.dev"
+  grafana.ini:
+    server:
+      # These are the key settings to fix redirects
+      domain: "grafana.ops.bitsb.dev"
+      root_url: "https://grafana.ops.bitsb.dev/"
+      serve_from_sub_path: false 
   replicas: 2
   resources:
     requests:
@@ -18,6 +21,7 @@ grafana:
       cert-manager.io/common-name: "grafana.ops.bitsb.dev"
       konghq.com/protocols: "https"
       konghq.com/https-redirect-status-code: "301"
+      konghq.com/preserve-host: "true"
     hosts:
       - grafana.ops.bitsb.dev
     tls:
