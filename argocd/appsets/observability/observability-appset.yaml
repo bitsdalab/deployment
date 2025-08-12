@@ -10,40 +10,47 @@ spec:
   generators:
   - list:
       elements:
-      # Thanos: Long-term, highly available metrics storage and multi-cluster federation for Prometheus
-      - name: thanos
+      # Prometheus Operator CRDs: Must be installed first
+      - name: prometheus-operator-crds
         namespace: observability
-        repoURL: https://thanos-io.github.io/thanos-helm-chart
-        chart: thanos
-        targetRevision: 30.2.0
-        priority: "600"
-      # ECK Operator: Manages Elasticsearch, Kibana, and Beats for log and metrics aggregation
+        repoURL: https://prometheus-community.github.io/helm-charts
+        chart: prometheus-operator-crds
+        targetRevision: 8.0.1
+        priority: "50"
+      # ECK Operator: Manages Elasticsearch, Kibana, and Beats
       - name: eck-operator
         namespace: observability
         repoURL: https://helm.elastic.co
         chart: eck-operator
         targetRevision: 3.1.0
         priority: "100"
-      # kube-prometheus-stack: Complete monitoring stack (Prometheus, Grafana, Alertmanager, exporters)
+      # kube-prometheus-stack: Complete monitoring stack - Updated version
       - name: kube-prometheus-stack
         namespace: observability
         repoURL: https://prometheus-community.github.io/helm-charts
         chart: kube-prometheus-stack
-        targetRevision: 58.3.0
+        targetRevision: 76.2.1  # Updated to latest
         priority: "200"
-      # Zipkin: Distributed tracing for microservices
-      - name: zipkin
-        namespace: observability
-        repoURL: https://openzipkin.github.io/zipkin
-        chart: zipkin
-        targetRevision: 0.1.2
-        priority: "400"
       # Blackbox Exporter: Probes endpoints for availability and performance
       - name: blackbox-exporter
         namespace: observability
         repoURL: https://prometheus-community.github.io/helm-charts
         chart: prometheus-blackbox-exporter
         targetRevision: 8.15.0
+        priority: "300"
+      # Zipkin: Distributed tracing for microservices
+      - name: zipkin
+        namespace: observability
+        repoURL: https://openzipkin.github.io/zipkin
+        chart: zipkin
+        targetRevision: 0.1.2  # Verify this version
+        priority: "400"
+      # Thanos: Long-term, highly available metrics storage - Deploy after Prometheus
+      - name: thanos
+        namespace: observability
+        repoURL: https://charts.bitnami.com/bitnami  # Consider switching to official
+        chart: thanos
+        targetRevision: 17.2.6  # Bitnami version, or use thanos-io.github.io
         priority: "500"
   template:
     metadata:
@@ -77,10 +84,12 @@ spec:
         - PruneLast=true
         - Validate=true
         - SkipDryRunOnMissingResource=true
-        - helm.skipTLSVerify=true
+        - Replace=true               # Handle CRD updates
+        - ServerSideApply=true       # Better CRD handling
+        - RespectIgnoreDifferences=true
         retry:
-          limit: 3
+          limit: 5                   # Increased retry limit
           backoff:
-            duration: 5s
+            duration: 10s            # Increased initial duration
             factor: 2
-            maxDuration: 3m
+            maxDuration: 5m          # Increased max duration
