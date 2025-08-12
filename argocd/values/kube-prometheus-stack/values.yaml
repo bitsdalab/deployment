@@ -22,6 +22,16 @@ grafana:
       konghq.com/protocols: "https"
       konghq.com/https-redirect-status-code: "301"
       konghq.com/preserve-host: "true"
+      konghq.com/strip-path: "false"
+      # Critical: Tell Kong to pass proper headers
+      konghq.com/plugins: |
+        request-transformer: |
+          config:
+            add:
+              headers:
+                - "X-Forwarded-Proto:https"
+                - "X-Forwarded-Host:grafana.ops.bitsb.dev"
+                - "X-Forwarded-Port:443"
     hosts:
       - grafana.ops.bitsb.dev
     tls:
