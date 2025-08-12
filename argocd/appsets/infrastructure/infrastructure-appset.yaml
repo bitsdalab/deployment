@@ -71,7 +71,7 @@ spec:
             valueFiles:
               - $values/argocd/values/{{name}}/values.yaml
         - repoURL: https://github.com/bitsdalab/deployment.git
-          targetRevision: feature/argocd-final
+          targetRevision: main
           ref: values
       destination:
         server: https://kubernetes.default.svc
