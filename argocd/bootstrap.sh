@@ -76,6 +76,26 @@ EOF
 
 echo "✅ Repository access configured"
 
+PROJECT="observability"
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitsdalab-deployment-repo-observability
+  namespace: $ARGOCD_NAMESPACE
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  type: git
+  url: $GITHUB_REPO
+  project: $PROJECT
+${GITHUB_USERNAME:+  username: $GITHUB_USERNAME}
+${GITHUB_TOKEN:+  password: $GITHUB_TOKEN}
+EOF
+
+echo "✅ Repository access for observability configured"
+
 # Step 2: Apply ArgoCD Projects
 echo ""
 echo "📋 Step 2: Applying ArgoCD Projects (RBAC)"

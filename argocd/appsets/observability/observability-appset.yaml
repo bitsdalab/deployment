@@ -36,14 +36,14 @@ spec:
         namespace: observability
         repoURL: https://helm.elastic.co
         chart: filebeat
-        targetRevision: 8.13.0
+        targetRevision: 8.12.2
         priority: "300"
       # Zipkin: Distributed tracing for microservices
       - name: zipkin
         namespace: observability
         repoURL: https://openzipkin.github.io/zipkin
         chart: zipkin
-        targetRevision: 0.2.2
+        targetRevision: 0.1.2
         priority: "400"
       # Blackbox Exporter: Probes endpoints for availability and performance
       - name: blackbox-exporter
