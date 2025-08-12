@@ -33,9 +33,9 @@ postgresql:
   enabled: true
   auth:
     username: outline
-    password: CHANGEME
+    password: outlinepass
     database: outline
-    postgresPassword: CHANGEME
+    postgresPassword: outlinepass
 
 redis:
   enabled: true
