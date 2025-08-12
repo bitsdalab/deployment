@@ -1,4 +1,7 @@
 grafana:
+  env:
+    GF_SERVER_ROOT_URL: "https://grafana.ops.bitsb.dev"
+    GF_SERVER_DOMAIN: "grafana.ops.bitsb.dev"
   replicas: 2
   resources:
     requests:
