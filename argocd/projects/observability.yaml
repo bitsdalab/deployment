@@ -14,6 +14,7 @@ spec:
   - 'https://grafana.github.io/helm-charts'
   - 'https://openzipkin.github.io/zipkin'
   - 'https://thanos-io.github.io/thanos-helm-chart'
+  - 'https://charts.signoz.io'
   destinations:
   - namespace: '*'
     server: '*'
