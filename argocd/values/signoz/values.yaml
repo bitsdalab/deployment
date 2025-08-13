@@ -3,10 +3,7 @@ signoz:
     enabled: true
     className: kong
     hosts:
-      - host: signoz.ops.bitsb.dev
-        paths:
-          - /
-        port: 80
+      - signoz.ops.bitsb.dev
     tls:
       - secretName: signoz-tls
         hosts:
