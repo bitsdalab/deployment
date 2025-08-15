@@ -1,0 +1,41 @@
+# SigNoz k8s-infra chart configuration for Kubernetes log collection
+# This chart deploys OpenTelemetry collectors to collect logs, metrics, and traces from K8s
+
+# Configure where to send data - point to SigNoz
+otel-collector:
+  config:
+    exporters:
+      otlp:
+        endpoint: "http://signoz-otel-collector.observability.svc.cluster.local:4317"
+        tls:
+          insecure: true
+
+# Enable log collection presets
+presets:
+  logsCollection:
+    enabled: true
+    # Exclude system namespaces by default
+    blacklist:
+      enabled: true
+      signozLogs: false
+      namespaces:
+        - kube-system
+      pods:
+        - hotrod
+        - locust
+      containers: []
+      additionalExclude: []
+
+# Resource configuration
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+# Deploy as DaemonSet for log collection
+nodeSelector: {}
+tolerations: []
+affinity: {}
