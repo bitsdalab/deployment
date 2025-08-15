@@ -3,7 +3,11 @@ signoz:
     enabled: true
     className: kong
     hosts:
-      - signoz.ops.bitsb.dev
+      - host: signoz.ops.bitsb.dev
+        paths:
+          - path: /
+            pathType: Prefix
+            port: 3301
     tls:
       - secretName: signoz-tls
         hosts:
