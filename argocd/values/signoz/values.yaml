@@ -1,20 +1,20 @@
-ingress:
-  enabled: true
-  className: kong
-  hosts:
-    - signoz.ops.bitsb.dev
-  tls:
-    - secretName: signoz-tls
-      hosts:
-        - signoz.ops.bitsb.dev
-  annotations:
-    cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
-    cert-manager.io/common-name: "signoz.ops.bitsb.dev"
-    konghq.com/protocols: "https"
-    konghq.com/https-redirect-status-code: "301"
-    konghq.com/preserve-host: "true"
-    konghq.com/strip-path: "false"
 signoz:
+  ingress:
+    enabled: true
+    className: kong
+    hosts:
+      - signoz.ops.bitsb.dev
+    tls:
+      - secretName: signoz-tls
+        hosts:
+          - signoz.ops.bitsb.dev
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+      cert-manager.io/common-name: "signoz.ops.bitsb.dev"
+      konghq.com/protocols: "https"
+      konghq.com/https-redirect-status-code: "301"
+      konghq.com/preserve-host: "true"
+      konghq.com/strip-path: "false"
   frontend:
     replicaCount: 2
     resources:
