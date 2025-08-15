@@ -1,18 +1,12 @@
 # SigNoz k8s-infra chart configuration for Kubernetes log collection
 # This chart deploys OpenTelemetry collectors to collect logs, metrics, and traces from K8s
 
-# Global OpenTelemetry configuration
-global:
-  # Point to SigNoz OTEL collector endpoint
-  endpoint: "http://signoz-otel-collector.observability.svc.cluster.local:4317"
-  
-# OpenTelemetry Collector configuration
-otelCollector:
-  env:
-    - name: OTEL_EXPORTER_OTLP_ENDPOINT
-      value: "http://signoz-otel-collector.observability.svc.cluster.local:4317"
-    - name: SIGNOZ_API_KEY
-      value: ""  # Empty for self-hosted SigNoz
+# OTLP endpoint configuration (required)
+otelCollectorEndpoint: "signoz-otel-collector.observability.svc.cluster.local:4317"
+otelInsecure: true
+
+# API key for SigNoz Cloud (empty for self-hosted)
+signozApiKey: ""
   
 # Enable log collection presets
 presets:
