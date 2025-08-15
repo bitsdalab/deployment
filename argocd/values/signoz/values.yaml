@@ -7,7 +7,7 @@ signoz:
         paths:
           - path: /
             pathType: Prefix
-            port: 3301
+            port: 8080
     tls:
       - secretName: signoz-tls
         hosts:
