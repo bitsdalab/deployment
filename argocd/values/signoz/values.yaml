@@ -48,6 +48,22 @@ signoz:
       limits:
         cpu: 500m
         memory: 512Mi
+    # Enable log collection - SigNoz already has built-in log support
+    # The otelCollector has httplogreceiver for logs and proper pipelines
+    extraVolumes:
+      - name: varlogpods
+        hostPath:
+          path: /var/log/pods
+      - name: varlibdockercontainers
+        hostPath:
+          path: /var/lib/docker/containers
+    extraVolumeMounts:
+      - name: varlogpods
+        mountPath: /var/log/pods
+        readOnly: true
+      - name: varlibdockercontainers
+        mountPath: /var/lib/docker/containers
+        readOnly: true
   clickhouse:
     persistence:
       enabled: true

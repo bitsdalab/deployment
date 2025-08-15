@@ -126,11 +126,7 @@ kubectl apply -f argocd/bootstrap/infrastructure-apps-root.yaml
 kubectl apply -f argocd/bootstrap/infrastructure-appset-root.yaml
 kubectl apply -f argocd/bootstrap/observability-appset-root.yaml
 
-
-# Apply all observability application manifests
-kubectl apply -f argocd/applications/observability/ || true
-
-echo "✅ Infrastructure Applications, ApplicationSets, and ECK Elastic resources created"
+echo "✅ Infrastructure and Observability ApplicationSets created"
 
 # Step 4: Deploy CICD Platform
 echo ""
@@ -157,8 +153,7 @@ echo "<CLUSTER_IP>    vault.cicd.bitsb.dev"
 echo "<CLUSTER_IP>    authentik.cicd.bitsb.dev"
 echo "<CLUSTER_IP>    harbor.cicd.bitsb.dev"
 echo "<CLUSTER_IP>    jenkins.cicd.bitsb.dev"
-echo "<CLUSTER_IP>    grafana.ops.bitsb.dev"
-echo "<CLUSTER_IP>    thanos.ops.bitsb.dev"
+echo "<CLUSTER_IP>    signoz.ops.bitsb.dev"
 echo ""
 
 echo "🔍 Find your cluster IP with:"
