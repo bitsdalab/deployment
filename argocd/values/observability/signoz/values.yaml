@@ -53,3 +53,9 @@ signoz:
       enabled: true
       size: 20Gi
       storageClass: longhorn
+
+# ArgoCD compatibility - ignore dynamic resource changes
+global:
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+    argocd.argoproj.io/sync-options: Prune=false

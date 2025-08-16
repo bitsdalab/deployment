@@ -77,6 +77,21 @@ spec:
         - Replace=true
         - ServerSideApply=true
         - RespectIgnoreDifferences=true
+        # Ignore differences in dynamic components
+        ignoreDifferences:
+        - group: ""
+          kind: Secret
+          jsonPointers:
+          - /data
+        - group: "apps"
+          kind: Deployment
+          jsonPointers:
+          - /spec/template/metadata/annotations
+        - group: "admissionregistration.k8s.io"
+          kind: MutatingWebhookConfiguration
+          jsonPointers:
+          - /webhooks/0/clientConfig/caBundle
+          - /webhooks/1/clientConfig/caBundle
         retry:
           limit: 5
           backoff:
