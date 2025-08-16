@@ -1,8 +1,4 @@
 # Velero values.yaml for MinIO backend
-
-# Disable CRD upgrade job to avoid ArgoCD conflicts
-upgradeCRDs: false
-
 credentials:
   useSecret: true
   existingSecret: velero-minio-creds
