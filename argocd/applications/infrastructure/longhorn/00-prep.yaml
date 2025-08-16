@@ -9,10 +9,8 @@ metadata:
     app.kubernetes.io/part-of: infrastructure
     app.kubernetes.io/managed-by: argocd
   annotations:
-    # Tells ArgoCD that this resource is managed by prep app, not Longhorn app
-    argocd.argoproj.io/tracking-id: longhorn-prep:v1:ServiceAccount:longhorn-system/longhorn-service-account
-    # Skip dry-run to avoid conflicts during sync
-    argocd.argoproj.io/sync-options: SkipDryRunOnMissingResource=true
+    # No prune to prevent conflicts with Longhorn application
+    argocd.argoproj.io/sync-options: Prune=false
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole

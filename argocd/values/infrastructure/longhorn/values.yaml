@@ -1,15 +1,8 @@
 # Longhorn Configuration
-# ServiceAccount is pre-created by prep application
-# Chart will use existing ServiceAccount without conflicts
+# ServiceAccount is pre-created by prep application to avoid conflicts
 
 # Version: 1.8.2
 # Documentation: https://longhorn.io/docs/
-
-# ServiceAccount configuration - use existing one from prep
-serviceAccount:
-  annotations:
-    # Indicate this ServiceAccount is managed externally
-    argocd.argoproj.io/managed-by: longhorn-prep
 
 # Global configuration
 global:
