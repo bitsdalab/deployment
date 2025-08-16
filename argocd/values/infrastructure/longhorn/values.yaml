@@ -1,8 +1,12 @@
 # Longhorn Configuration
 
-# Use pre-created ServiceAccount for ArgoCD-managed install
+# Use pre-created ServiceAccount from prep application
 serviceAccount:
   name: longhorn-service-account
+  create: false
+
+# Disable RBAC creation since it's handled by prep application  
+rbac:
   create: false
 # Version: 1.8.2
 # Documentation: https://longhorn.io/docs/
