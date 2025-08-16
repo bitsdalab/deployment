@@ -20,11 +20,9 @@ externalURL: https://harbor.cicd.bitsb.dev
 harborAdminPassword: "Harbor12345"
 
 # Deployment strategy to prevent RWO volume conflicts
-strategy:
-  type: Recreate
-
-# Resource requests and limits
 core:
+  strategy:
+    type: Recreate
   resources:
     requests:
       cpu: 100m
@@ -34,6 +32,8 @@ core:
       memory: 512Mi
 
 jobservice:
+  strategy:
+    type: Recreate
   resources:
     requests:
       cpu: 100m
@@ -43,6 +43,8 @@ jobservice:
       memory: 512Mi
 
 registry:
+  strategy:
+    type: Recreate
   registry:
     resources:
       requests:
