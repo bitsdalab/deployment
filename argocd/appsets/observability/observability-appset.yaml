@@ -38,20 +38,6 @@ spec:
         chart: prometheus-blackbox-exporter
         targetRevision: 8.15.0
         priority: "300"
-      # Zipkin: Distributed tracing for microservices
-      - name: zipkin
-        namespace: observability
-        repoURL: https://openzipkin.github.io/zipkin
-        chart: zipkin
-        targetRevision: 0.1.2  # Verify this version
-        priority: "400"
-      # Thanos: Long-term, highly available metrics storage - Deploy after Prometheus
-      - name: thanos
-        namespace: observability
-        repoURL: https://charts.bitnami.com/bitnami  # Consider switching to official
-        chart: thanos
-        targetRevision: 17.2.6  # Bitnami version, or use thanos-io.github.io
-        priority: "500"
   template:
     metadata:
       name: "{{name}}"
