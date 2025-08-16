@@ -19,11 +19,6 @@ externalURL: https://harbor.cicd.bitsb.dev
 # Admin password (change this in production)
 harborAdminPassword: "Harbor12345"
 
-# Deployment strategy to prevent RWO volume conflicts
-# Set to Recreate for deployments with persistent volumes (jobservice, registry)
-updateStrategy:
-  type: Recreate
-
 # Resource requests and limits
 core:
   resources:
@@ -53,12 +48,17 @@ registry:
         cpu: 500m
         memory: 512Mi
 
-# Persistence
+# Persistence with ReadWriteMany for rolling updates
 persistence:
   enabled: true
   persistentVolumeClaim:
     registry:
+      accessMode: ReadWriteMany
       size: 20Gi
+    jobservice:
+      jobLog:
+        accessMode: ReadWriteMany
+        size: 1Gi
     database:
       size: 5Gi
 
