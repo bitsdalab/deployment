@@ -55,7 +55,13 @@ signoz:
       storageClass: longhorn
 
 # ArgoCD compatibility - ignore dynamic resource changes
-global:
-  annotations:
-    argocd.argoproj.io/compare-options: IgnoreExtraneous
-    argocd.argoproj.io/sync-options: Prune=false
+# Apply to all SigNoz components
+commonAnnotations:
+  argocd.argoproj.io/compare-options: IgnoreExtraneous
+  argocd.argoproj.io/sync-options: Prune=false
+
+# Specific component configurations  
+clickhouse:
+  operator:
+    podAnnotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
