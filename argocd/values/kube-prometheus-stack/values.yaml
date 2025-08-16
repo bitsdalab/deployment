@@ -1,10 +1,28 @@
+# kube-prometheus-stack Helm chart configuration (v76.4.0)
+# Complete monitoring stack: Prometheus, Grafana, AlertManager, and exporters
+
+## Grafana configuration with Kong ingress (redirection fixes applied)
 grafana:
+  enabled: true
+  
+  # Admin credentials
+  adminPassword: admin  # Change this in production!
+  
   grafana.ini:
     server:
-      # These are the key settings to fix redirects
+      # These are the key settings to fix redirects with Kong
       domain: "grafana.ops.bitsb.dev"
       root_url: "https://grafana.ops.bitsb.dev/"
       serve_from_sub_path: false 
+    auth:
+      disable_login_form: false
+    auth.anonymous:
+      enabled: false
+    security:
+      allow_embedding: true
+    users:
+      allow_sign_up: false
+  
   replicas: 2
   resources:
     requests:
@@ -13,6 +31,16 @@ grafana:
     limits:
       cpu: 500m
       memory: 512Mi
+  
+  # Persistence for dashboards and configuration
+  persistence:
+    type: pvc
+    enabled: true
+    storageClassName: longhorn
+    accessModes:
+      - ReadWriteOnce
+    size: 10Gi
+  
   ingress:
     enabled: true
     ingressClassName: kong
@@ -23,7 +51,7 @@ grafana:
       konghq.com/https-redirect-status-code: "301"
       konghq.com/preserve-host: "true"
       konghq.com/strip-path: "false"
-      # Critical: Tell Kong to pass proper headers
+      # Critical: Tell Kong to pass proper headers for Grafana
       konghq.com/plugins: |
         request-transformer: |
           config:
@@ -38,7 +66,27 @@ grafana:
       - secretName: grafana-tls
         hosts:
           - grafana.ops.bitsb.dev
+  
+  # Default dashboards and sidecar configuration
+  defaultDashboardsEnabled: true
+  defaultDashboardsTimezone: utc
+  
+  sidecar:
+    dashboards:
+      enabled: true
+      searchNamespace: ALL
+      label: grafana_dashboard
+      labelValue: "1"
+    datasources:
+      enabled: true
+      searchNamespace: ALL
+      label: grafana_datasource
+      labelValue: "1"
+
+## Prometheus configuration
 prometheus:
+  enabled: true
+  
   prometheusSpec:
     replicas: 2
     resources:
@@ -48,10 +96,33 @@ prometheus:
       limits:
         cpu: 1000m
         memory: 1024Mi
+    
+    # Storage configuration
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+    
+    # Retention settings
+    retention: 30d
+    retentionSize: 45GB
+    
+    # Allow monitoring across namespaces
     serviceMonitorSelectorNilUsesHelmValues: false
+    podMonitorSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+  
   ingress:
     enabled: false
+
+## AlertManager configuration
 alertmanager:
+  enabled: true
+  
   alertmanagerSpec:
     replicas: 2
     resources:
@@ -61,5 +132,104 @@ alertmanager:
       limits:
         cpu: 500m
         memory: 512Mi
+    
+    # Storage configuration
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: longhorn
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+  
   ingress:
     enabled: false
+
+## Prometheus Operator configuration
+prometheusOperator:
+  enabled: true
+  
+  resources:
+    limits:
+      cpu: 200m
+      memory: 200Mi
+    requests:
+      cpu: 100m
+      memory: 100Mi
+
+## Node Exporter configuration
+nodeExporter:
+  enabled: true
+  
+  resources:
+    requests:
+      cpu: 102m
+      memory: 180Mi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+
+## Kube State Metrics configuration
+kubeStateMetrics:
+  enabled: true
+  
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+## Additional ServiceMonitors for common services
+additionalServiceMonitors:
+  # Monitor Kong ingress controller
+  - name: kong-serviceMonitor
+    selector:
+      matchLabels:
+        app.kubernetes.io/name: kong
+    endpoints:
+    - port: kong-admin
+      path: /metrics
+      interval: 30s
+    namespaceSelector:
+      matchNames:
+      - kong-system
+  
+  # Monitor SigNoz components
+  - name: signoz-serviceMonitor
+    selector:
+      matchLabels:
+        app.kubernetes.io/part-of: signoz
+    endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+    namespaceSelector:
+      matchNames:
+      - observability
+
+## Custom alerting rules
+additionalPrometheusRules:
+  - name: kubernetes-resources
+    groups:
+    - name: kubernetes-resources
+      rules:
+      - alert: KubePodCrashLooping
+        expr: max_over_time(increase(kube_pod_container_status_restarts_total[5m])[15m:5m]) > 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping
+          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} ({{ $labels.container }}) is restarting {{ printf \"%.2f\" $value }} times / 5 minutes."
+
+      - alert: KubePodNotReady
+        expr: sum by (namespace, pod) (max by(namespace, pod) (kube_pod_status_phase{phase=~"Pending|Unknown"}) * on(namespace, pod) group_left(owner_kind) topk by(namespace, pod) (1, max by(namespace, pod, owner_kind) (kube_pod_owner{owner_kind!="Job"}))) > 0
+        for: 15m
+        labels:
+          severity: warning
+        annotations:
+          summary: Pod has been in a non-ready state for more than 15 minutes
+          description: "Pod {{ $labels.namespace }}/{{ $labels.pod }} has been in a non-ready state for longer than 15 minutes."
