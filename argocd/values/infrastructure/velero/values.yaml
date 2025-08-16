@@ -18,6 +18,16 @@ configuration:
         region: minio
         s3ForcePathStyle: "true"
         s3Url: http://bits-node-2:9000
+  # Volume snapshot location configuration
+  volumeSnapshotLocation:
+    - name: default
+      provider: aws
+      config:
+        region: minio
+
+# Deployment configuration
+deployNodeAgent: false  # Disable node agent if you don't need volume snapshots
+snapshotsEnabled: false  # Disable volume snapshots, only backup Kubernetes resources
 # AWS plugin is required for S3/MinIO backends
 initContainers:
   - name: velero-plugin-for-aws
