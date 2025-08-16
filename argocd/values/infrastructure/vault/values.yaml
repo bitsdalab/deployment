@@ -93,9 +93,17 @@ ui:
       cpu: "200m"
       memory: "256Mi"
 
-# Enable Vault Injector for Kubernetes
+# HashiCorp Vault Configuration
+# Production-ready setup with HA, Auto-unseal
+
+# Injector configuration
 injector:
   enabled: true
+  # ArgoCD compatibility - ignore webhook configuration changes
+  webhook:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-options: Prune=false
 
 # Enable metrics for Prometheus
 metrics:
