@@ -23,7 +23,7 @@ grafana:
     users:
       allow_sign_up: false
   
-  replicas: 2
+  replicas: 1
   resources:
     requests:
       cpu: 100m
@@ -212,9 +212,9 @@ additionalServiceMonitors:
 
 ## Custom alerting rules
 additionalPrometheusRules:
-  - name: kubernetes-resources
+  - name: custom-kubernetes-resources
     groups:
-    - name: kubernetes-resources
+    - name: custom-kubernetes-resources
       rules:
       - alert: KubePodCrashLooping
         expr: max_over_time(increase(kube_pod_container_status_restarts_total[5m])[15m:5m]) > 0
