@@ -33,9 +33,9 @@ spec:
       - PruneLast=true
       - Validate=true
       - SkipDryRunOnMissingResource=true
-      # Velero-specific sync options for handling upgrade hooks
-      - Replace=true
-      - Force=true
+      # Handle Helm pre-upgrade hooks that might conflict
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
     retry:
       limit: 3
       backoff:
