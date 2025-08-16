@@ -10,28 +10,31 @@ spec:
   generators:
   - list:
       elements:
-      # SigNoz k8s-infra: Required for Kubernetes pod log collection
+      # SigNoz k8s-infra (Kubernetes log collection)
       - name: k8s-infra
         namespace: platform
         repoURL: https://charts.signoz.io
         chart: k8s-infra
         targetRevision: 0.14.1
         priority: "50"
-      # SigNoz: Modern open-source observability platform (traces, metrics, logs)
+
+      # SigNoz (Modern observability platform)
       - name: signoz
         namespace: observability
         repoURL: https://charts.signoz.io
         chart: signoz
         targetRevision: 0.88.3
         priority: "100"
-      # kube-prometheus-stack: Complete monitoring stack with Prometheus, Grafana, AlertManager
+
+      # kube-prometheus-stack (Prometheus, Grafana, AlertManager)
       - name: kube-prometheus-stack
         namespace: observability
         repoURL: https://prometheus-community.github.io/helm-charts
         chart: kube-prometheus-stack
-        targetRevision: 76.4.0  # Latest version
+        targetRevision: 76.4.0
         priority: "200"
-      # Blackbox Exporter: Probes endpoints for availability and performance
+
+      # Blackbox Exporter (Endpoint monitoring)
       - name: blackbox-exporter
         namespace: observability
         repoURL: https://prometheus-community.github.io/helm-charts
@@ -52,7 +55,8 @@ spec:
           targetRevision: "{{targetRevision}}"
           helm:
             valueFiles:
-              - $values/argocd/values/{{name}}/values.yaml
+              - $values/argocd/values/observability/{{name}}/values.yaml
+            ignoreMissingValueFiles: true
         - repoURL: https://github.com/bitsdalab/deployment.git
           targetRevision: feature/monitoring
           ref: values
@@ -70,12 +74,12 @@ spec:
         - PruneLast=true
         - Validate=true
         - SkipDryRunOnMissingResource=true
-        - Replace=true               # Handle CRD updates
-        - ServerSideApply=true       # Better CRD handling
+        - Replace=true
+        - ServerSideApply=true
         - RespectIgnoreDifferences=true
         retry:
-          limit: 5                   # Increased retry limit
+          limit: 5
           backoff:
-            duration: 10s            # Increased initial duration
+            duration: 10s
             factor: 2
-            maxDuration: 5m          # Increased max duration
+            maxDuration: 5m

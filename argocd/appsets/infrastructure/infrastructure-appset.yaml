@@ -10,6 +10,7 @@ spec:
   generators:
   - list:
       elements:
+      # Cert-Manager (Certificate management)
       - name: cert-manager
         namespace: cert-manager
         repoURL: https://charts.jetstack.io
@@ -17,6 +18,7 @@ spec:
         targetRevision: v1.16.2
         priority: "200"
 
+      # Kong (Ingress Controller)
       - name: kong
         namespace: ingress
         repoURL: https://kong.github.io/charts
@@ -24,6 +26,7 @@ spec:
         targetRevision: 2.40.0
         priority: "300"
 
+      # Longhorn (Storage)
       - name: longhorn
         namespace: longhorn-system
         repoURL: https://charts.longhorn.io
@@ -31,7 +34,7 @@ spec:
         targetRevision: 1.8.2
         priority: "400"
 
-      # Velero Backup/Restore
+      # Velero (Backup/Restore)
       - name: velero
         namespace: velero
         repoURL: https://vmware-tanzu.github.io/helm-charts
@@ -47,14 +50,13 @@ spec:
         targetRevision: 0.9.19
         priority: "600"
 
-      # HashiCorp Vault (official)
+      # HashiCorp Vault (Secrets management)
       - name: vault
         namespace: vault
         repoURL: https://helm.releases.hashicorp.com
         chart: vault
         targetRevision: 0.30.0
         priority: "700"
-
   template:
     metadata:
       name: "{{name}}"
@@ -69,7 +71,8 @@ spec:
           targetRevision: "{{targetRevision}}"
           helm:
             valueFiles:
-              - $values/argocd/values/{{name}}/values.yaml
+              - $values/argocd/values/infrastructure/{{name}}/values.yaml
+            ignoreMissingValueFiles: true
         - repoURL: https://github.com/bitsdalab/deployment.git
           targetRevision: main
           ref: values
