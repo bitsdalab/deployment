@@ -34,14 +34,6 @@ spec:
         targetRevision: 1.9.1
         priority: "400"
 
-      # Velero (Backup/Restore)
-      - name: velero
-        namespace: velero
-        repoURL: https://vmware-tanzu.github.io/helm-charts
-        chart: velero
-        targetRevision: 10.0.10
-        priority: "500"
-
       # External Secrets Operator (ESO)
       - name: external-secrets-operator
         namespace: external-secrets
