@@ -54,14 +54,33 @@ signoz:
       size: 20Gi
       storageClass: longhorn
 
-# ArgoCD compatibility - ignore dynamic resource changes
-# Apply to all SigNoz components
-commonAnnotations:
-  argocd.argoproj.io/compare-options: IgnoreExtraneous
-  argocd.argoproj.io/sync-options: Prune=false
-
-# Specific component configurations  
+# ArgoCD compatibility for SigNoz components
+# ClickHouse operator configuration
 clickhouse:
   operator:
+    # Add ArgoCD annotations to ignore checksum differences
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
     podAnnotations:
       argocd.argoproj.io/compare-options: IgnoreExtraneous
+
+# Frontend StatefulSet
+frontend:
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+  podAnnotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+
+# QueryService  
+queryService:
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+  podAnnotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+
+# ZooKeeper StatefulSet
+zookeeper:
+  annotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
+  podAnnotations:
+    argocd.argoproj.io/compare-options: IgnoreExtraneous
