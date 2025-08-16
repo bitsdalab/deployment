@@ -1,7 +1,6 @@
 # Longhorn Configuration
-# ServiceAccount is pre-created by prep application to avoid conflicts
 
-# Version: 1.8.2
+# Version: 1.9.1
 # Documentation: https://longhorn.io/docs/
 
 # Global configuration

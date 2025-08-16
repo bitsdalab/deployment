@@ -31,7 +31,7 @@ spec:
         namespace: longhorn-system
         repoURL: https://charts.longhorn.io
         chart: longhorn
-        targetRevision: 1.8.2
+        targetRevision: 1.9.1
         priority: "400"
 
       # Velero (Backup/Restore)
