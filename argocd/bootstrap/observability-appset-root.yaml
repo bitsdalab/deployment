@@ -10,7 +10,7 @@ spec:
   project: observability
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
-    targetRevision: feature/monitoring
+    targetRevision: main
     path: argocd/appsets/observability
   destination:
     server: https://kubernetes.default.svc

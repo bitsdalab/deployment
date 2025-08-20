@@ -58,7 +58,7 @@ spec:
               - $values/argocd/values/observability/{{name}}/values.yaml
             ignoreMissingValueFiles: true
         - repoURL: https://github.com/bitsdalab/deployment.git
-          targetRevision: feature/monitoring
+          targetRevision: main
           ref: values
       destination:
         server: https://kubernetes.default.svc
