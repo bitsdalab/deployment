@@ -1,0 +1,85 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: observability
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: observability-appset
+    app.kubernetes.io/part-of: observability
+spec:
+  generators:
+  - list:
+      elements:
+      # SigNoz k8s-infra (Kubernetes log collection)
+      - name: k8s-infra
+        namespace: platform
+        repoURL: https://charts.signoz.io
+        chart: k8s-infra
+        targetRevision: 0.14.1
+        priority: "50"
+
+      # SigNoz (Modern observability platform)
+      - name: signoz
+        namespace: observability
+        repoURL: https://charts.signoz.io
+        chart: signoz
+        targetRevision: 0.88.3
+        priority: "100"
+
+      # kube-prometheus-stack (Prometheus, Grafana, AlertManager)
+      - name: kube-prometheus-stack
+        namespace: observability
+        repoURL: https://prometheus-community.github.io/helm-charts
+        chart: kube-prometheus-stack
+        targetRevision: 76.4.0
+        priority: "200"
+
+      # Blackbox Exporter (Endpoint monitoring)
+      - name: blackbox-exporter
+        namespace: observability
+        repoURL: https://prometheus-community.github.io/helm-charts
+        chart: prometheus-blackbox-exporter
+        targetRevision: 8.15.0
+        priority: "300"
+  template:
+    metadata:
+      name: "{{name}}"
+      labels:
+        app.kubernetes.io/name: "{{name}}"
+        app.kubernetes.io/part-of: observability
+    spec:
+      project: observability
+      sources:
+        - repoURL: "{{repoURL}}"
+          chart: "{{chart}}"
+          targetRevision: "{{targetRevision}}"
+          helm:
+            valueFiles:
+              - $values/argocd/values/observability/{{name}}/values.yaml
+            ignoreMissingValueFiles: true
+        - repoURL: https://github.com/bitsdalab/deployment.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+        - Validate=true
+        - SkipDryRunOnMissingResource=true
+        - Replace=true
+        - ServerSideApply=true
+        - RespectIgnoreDifferences=true
+        retry:
+          limit: 5
+          backoff:
+            duration: 10s
+            factor: 2
+            maxDuration: 5m

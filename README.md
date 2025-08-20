@@ -1,173 +1,76 @@
-# ArgoCD GitOps Platform Bootstrap
+# ArgoCD GitOps Platform
 
-This repository provides a complete GitOps-based Kubernetes platform deployment using ArgoCD, supporting both infrastructure and CICD components.
+Your Kubernetes platform deployment for `cicd.bitsb.dev` using ArgoCD ApplicationSets.
 
-## Environment Variable Setup (macOS)
+## Platform Components
 
-To automate Vault unseal and bootstrap, set your unseal key(s) and GitHub credentials as environment variables in your shell profile (e.g., `~/.zshrc` for macOS):
+**Infrastructure**: Longhorn storage, Kong ingress, cert-manager TLS, Vault secrets, Velero backup, Cilium LoadBalancer
+**CI/CD**: Authentik SSO, Harbor registry, Jenkins automation  
+**Observability**: Planned (Prometheus, Grafana, Loki)
 
-### Required Environment Variables
+## Quick Access
+
+- ArgoCD: https://argocd.cicd.bitsb.dev
+- Longhorn: https://longhorn.cicd.bitsb.dev  
+- Vault: https://vault.cicd.bitsb.dev
+- Authentik: https://authentik.cicd.bitsb.dev
+- Harbor: https://harbor.cicd.bitsb.dev
+- Jenkins: https://jenkins.cicd.bitsb.dev
+
+## Bootstrap
+
+```bash
+./argocd/bootstrap.sh
+```
+
+## Documentation
+
+- **[Infrastructure Setup](docs/INFRASTRUCTURE.md)** - Storage, networking, security
+- **[CI/CD Setup](docs/CICD.md)** - Development workflow tools  
+- **[Observability Plan](docs/OBSERVABILITY.md)** - Future monitoring stack
+
+## 🎯 Quick Start
+
+### Prerequisites
+1. **Kubernetes cluster** with kubectl access
+2. **ArgoCD installed** via [bitsdalab/infra](https://github.com/bitsdalab/infra) repository
+3. **Environment variables** set for automation
+
+### Environment Setup (macOS)
 Add to your `~/.zshrc`:
 ```zsh
-# Vault Unseal Key (Standalone Mode)
+# Vault Unseal Key (for automated secret management)
 export VAULT_UNSEAL_KEY="<your-unseal-key>"
 
-# GitHub Repository Access
+# GitHub Repository Access (for GitOps)
 export GITHUB_USERNAME="<your-github-username>"
 export GITHUB_TOKEN="<your-github-token>"
 ```
 
-Reload your shell:
-```zsh
-source ~/.zshrc
-```
+Reload: `source ~/.zshrc`
 
-### HA Mode (Multiple Vault Keys)
-For Vault HA deployments, you can set multiple keys (though the current bootstrap script uses single key mode):
-```zsh
-export VAULT_UNSEAL_KEY="<your-single-unseal-key>"
-```
-
-**Note**: The current `bootstrap.sh` script is configured for single-key mode only. For HA setups with multiple keys, additional script modifications would be required.
-
-**Security Note:**
-- Never commit your unseal keys, tokens, or credentials to source control
-- Restrict access to your shell profile and secrets
-- Use GitHub tokens with minimal required permissions
-# GitOps Platform Architecture
-
-## Overview
-This GitOps platform provides automated deployment and management of Kubernetes infrastructure and CICD components using ArgoCD ApplicationSets and Applications.
-
-**Architecture**: ArgoCD is deployed and managed via the [bitsdalab/infra](https://github.com/bitsdalab/infra) repository using Ansible playbooks. This repository contains the GitOps configurations and bootstrap scripts for the platform components.
-
-## Key Features ✨
-- **GitOps Workflow**: Declarative infrastructure and application management
-- **ArgoCD ApplicationSets**: Automated application deployment patterns
-- **Vault Integration**: Automated unseal and secret management
-- **TLS Automation**: Automatic certificate management with cert-manager
-- **CICD Platform**: Complete CI/CD pipeline with Authentik, Harbor, and Jenkins
-- **Infrastructure Components**: cert-manager, Kong ingress, Longhorn storage, External Secrets Operator, Cilium LoadBalancer config
-- **Bootstrap Automation**: Single-command platform deployment
-
-## Platform Components
-
-### Infrastructure Layer
-- **cert-manager**: TLS certificate management with Let's Encrypt
-- **Kong**: Ingress controller with TLS termination
-- **Longhorn**: Distributed block storage
-- **Velero**: Backup and disaster recovery
-- **External Secrets Operator**: External secret management integration
-- **Vault**: Secret management and encryption
-- **Cilium LoadBalancer Configuration**: L2 announcement policy and IP pool (CNI managed via infra repo)
-
-### CICD Layer
-- **ArgoCD**: GitOps continuous deployment (managed via [infra repository](https://github.com/bitsdalab/infra))
-- **Authentik**: Identity provider and SSO
-- **Harbor**: Container registry with security scanning
-- **Jenkins**: CI/CD automation server
-
-## Repository Structure
-```
-deployment/
-├── README.md                     # This documentation
-├── argocd/
-│   ├── bootstrap.sh              # Main bootstrap script
-│   ├── applications/             # Individual applications
-│   │   └── infrastructure/       # Infrastructure apps
-│   │       ├── cert-manager/     # Certificate management configs
-│   │       ├── cilium/           # Cilium L2 and LoadBalancer configs
-│   │       ├── longhorn/         # Storage configurations
-│   │       ├── velero/           # Backup configurations
-│   │       ├── cert-manager-ca-application.yaml
-│   │       ├── cilium-application.yaml
-│   │       ├── longhorn-application.yaml
-│   │       └── velero-application.yaml
-│   ├── appsets/                  # ApplicationSets
-│   │   ├── infrastructure/       # Infrastructure AppSet
-│   │   └── cicd/                 # CICD AppSet
-│   ├── bootstrap/                # Bootstrap root applications
-│   │   ├── infrastructure-apps-root.yaml
-│   │   ├── infrastructure-appset-root.yaml
-│   │   └── cicd-appset-root.yaml
-│   ├── projects/                 # ArgoCD projects (RBAC)
-│   │   ├── infrastructure.yaml
-│   │   └── cicd.yaml
-│   └── values/                   # Helm values files
-│       ├── authentik/
-│       ├── cert-manager/
-│       ├── external-secrets-operator/
-│       ├── harbor/
-│       ├── jenkins/
-│       ├── kong/
-│       ├── longhorn/
-│       ├── vault/
-│       └── velero/
-```
-## Bootstrap Deployment
-
-### Prerequisites
-1. **Kubernetes Cluster**: Running cluster with kubectl access
-2. **ArgoCD**: Deployed via the [infra repository](https://github.com/bitsdalab/infra) playbook
-3. **Environment Variables**: Set VAULT_UNSEAL_KEY, GITHUB_USERNAME, GITHUB_TOKEN
-
-**Note**: ArgoCD itself is managed separately from the [bitsdalab/infra](https://github.com/bitsdalab/infra) repository using Ansible playbooks. This repository assumes ArgoCD is already installed and accessible.
-
-### Quick Start
+### 🚀 Deploy the Platform
 ```bash
-# 1. First, deploy ArgoCD using the infra repository
-git clone https://github.com/bitsdalab/infra.git
-# Follow the infra repository instructions to deploy ArgoCD
-
-# 2. Then, bootstrap the GitOps platform
+# Clone this repository
 git clone https://github.com/bitsdalab/deployment.git
 cd deployment
 
-# Run the bootstrap script
+# Run the automated bootstrap
 chmod +x argocd/bootstrap.sh
 ./argocd/bootstrap.sh
 ```
 
-### Bootstrap Process
-The `bootstrap.sh` script automates the complete platform deployment:
+The bootstrap script will:
+1. 🔐 **Configure secrets** (Vault unseal, GitHub access)
+2. 🏗️ **Deploy infrastructure** (storage, networking, security)
+3. 🔄 **Setup CI/CD** (identity, registry, automation)
+4. 📊 **Prepare observability** (monitoring stack - coming soon)
 
-#### Step 0: Vault Unseal Key Secret
-- Creates Kubernetes secret for automated Vault unseal
-- Prompts for unseal key if not set in environment
-- Configures secret in `vault` namespace
-
-#### Step 1: Repository Access Setup
-- Configures GitHub repository credentials
-- Creates ArgoCD repository secret
-- Enables GitOps access to deployment configurations
-
-#### Step 2: ArgoCD Projects (RBAC)
-- Applies ArgoCD projects for namespace isolation
-- Configures RBAC permissions
-- Sets up `infrastructure` and `cicd` projects
-
-#### Step 3: Infrastructure Bootstrap
-- Deploys infrastructure Applications root
-- Deploys infrastructure ApplicationSets root
-- Installs: cert-manager, Kong, Longhorn, Velero, External Secrets Operator, Vault
-- Configures: Cilium LoadBalancer IP pool and L2 announcement policy
-
-#### Step 4: CICD Platform Bootstrap
-- Deploys CICD ApplicationSets root
-- Installs: Authentik, Harbor, Jenkins
-- Configures identity, registry, and CI/CD services
-
-#### Step 5: Access Information
-- Displays service URLs and credentials
-- Provides /etc/hosts configuration
-- Shows monitoring commands
-
-### Network Configuration
-Add these entries to your `/etc/hosts` file:
+### 🌐 Access Your Platform
+After deployment, add to `/etc/hosts`:
 ```
-# Replace <CLUSTER_IP> with your actual cluster IP
 <CLUSTER_IP>    argocd.cicd.bitsb.dev
-<CLUSTER_IP>    longhorn.cicd.bitsb.dev
+<CLUSTER_IP>    longhorn.cicd.bitsb.dev  
 <CLUSTER_IP>    vault.cicd.bitsb.dev
 <CLUSTER_IP>    authentik.cicd.bitsb.dev
 <CLUSTER_IP>    harbor.cicd.bitsb.dev
@@ -179,505 +82,119 @@ Find your cluster IP:
 kubectl get svc -n kong kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
 ```
 
-### Default Credentials
-- **ArgoCD**: https://argocd.cicd.bitsb.dev (admin / <set during infra deployment>)
-- **Longhorn**: https://longhorn.cicd.bitsb.dev (no authentication by default)
-- **Vault**: https://vault.cicd.bitsb.dev (requires initialization and unseal)
-- **Harbor**: https://harbor.cicd.bitsb.dev (admin / Harbor12345)
-- **Jenkins**: https://jenkins.cicd.bitsb.dev (admin / admin123)
-- **Authentik**: https://authentik.cicd.bitsb.dev (setup required on first access)
+## 🧭 Navigation Guide
 
-## Vault Unseal Automation
+**New to DevOps/GitOps?** Start here:
+1. 📖 Read [Infrastructure Guide](docs/INFRASTRUCTURE.md) to understand the foundation
+2. 🔄 Follow [CI/CD Guide](docs/CICD.md) to set up your development workflow  
+3. 📊 Check [Observability Guide](docs/OBSERVABILITY.md) for monitoring (coming soon)
 
-### Automated Unseal Pattern
-The deployment supports automated Vault unseal using:
-- **Kubernetes Secret**: Stores unseal key(s) securely
-- **Sidecar Container**: Monitors and unseals Vault automatically
-- **Bootstrap Integration**: Creates secrets during deployment
+**Experienced with Kubernetes?** Jump to:
+- 🏗️ [Infrastructure Guide](docs/INFRASTRUCTURE.md) for storage, networking, and security details
+- 🔄 [CI/CD Guide](docs/CICD.md) for development pipeline configuration
+- 📊 [Observability Guide](docs/OBSERVABILITY.md) for monitoring stack setup
 
-### Standalone Mode (Single Key)
-```bash
-# Initialize Vault with single key
-vault operator init -key-shares=1 -key-threshold=1
+**Need to troubleshoot?** Visit:
+- 🔧 [Infrastructure Troubleshooting](docs/INFRASTRUCTURE.md#troubleshooting)
+- 🔧 [CI/CD Troubleshooting](docs/CICD.md#troubleshooting)  
+- 🔧 [Observability Troubleshooting](docs/OBSERVABILITY.md#troubleshooting)
 
-# Set environment variable
-export VAULT_UNSEAL_KEY="<your-unseal-key>"
+## 📁 Repository Structure
+
+```
+deployment/
+├── README.md                          # 👈 You are here - Main entry point
+├── docs/                              # 📚 Detailed guides
+│   ├── INFRASTRUCTURE.md               # 🏗️ Storage, networking, security
+│   ├── CICD.md                        # 🔄 Development workflow
+│   └── OBSERVABILITY.md               # 📊 Monitoring and logging
+├── argocd/                            # 🎛️ GitOps configurations
+│   ├── bootstrap.sh                   # 🚀 Main deployment script
+│   ├── applications/                  # 📦 Individual app configs
+│   ├── appsets/                       # 🔄 Application sets (patterns)
+│   ├── bootstrap/                     # 🎯 Root applications
+│   ├── projects/                      # 🔐 RBAC and permissions
+│   └── values/                        # ⚙️ Helm configuration
+└── scripts/                           # 🛠️ Utility scripts
 ```
 
-### HA Mode (Multiple Keys)
-```bash
-# Initialize Vault with single key (current setup)
-vault operator init -key-shares=1 -key-threshold=1
+## 🤝 Understanding GitOps Workflow
 
-# Set environment variable (same as standalone mode)
-export VAULT_UNSEAL_KEY="<your-unseal-key>"
-```
-
-**Note**: The current bootstrap script uses single-key mode for both standalone and HA scenarios. True HA with multiple keys would require additional configuration.
-
-### Security Considerations
-- Unseal keys are sensitive - use RBAC to restrict secret access
-- Consider Vault's [auto-unseal](https://www.vaultproject.io/docs/concepts/seal) for production
-- Regularly rotate and backup unseal keys securely
-
-## Cilium LoadBalancer Configuration
-
-### Overview
-While Cilium CNI is deployed via the [infra repository](https://github.com/bitsdalab/infra), this repository manages Cilium's LoadBalancer configuration:
-
-### LoadBalancer Components
-- **L2 Announcement Policy**: Enables L2 advertisement for LoadBalancer services
-- **IP Pool Configuration**: Defines available IP range (192.168.1.100/28)
-- **Service Integration**: Automatic IP assignment for Kong and other LoadBalancer services
-
-### Configuration Files
-```bash
-# L2 announcement policy
-argocd/applications/infrastructure/cilium/l2-policy.yaml
-
-# LoadBalancer IP pool
-argocd/applications/infrastructure/cilium/lb-pool.yaml
-
-# Application definition
-argocd/applications/infrastructure/cilium-application.yaml
-```
-
-### LoadBalancer Operations
-```bash
-# Check LoadBalancer IP pool
-kubectl get ciliumloadbalancerippool
-
-# Check L2 announcement policy  
-kubectl get ciliuml2announcementpolicy
-
-# Monitor LoadBalancer service IPs
-kubectl get svc -A --field-selector spec.type=LoadBalancer
-```
-
-**Note**: Cilium CNI installation and core networking is managed by the infra repository. This repository only configures the LoadBalancer functionality.
-
-## GitOps Management
+### How Changes Work
+1. **Make Changes**: Edit files in this Git repository
+2. **Review**: Create pull request for team review
+3. **Merge**: Changes are merged to main branch
+4. **Auto-Deploy**: ArgoCD detects changes and updates cluster
+5. **Monitor**: Check ArgoCD UI to see deployment status
 
 ### ArgoCD Applications
-Monitor and manage applications through ArgoCD:
-```bash
-# View all applications
-kubectl get applications -n argocd
+- **Applications**: Individual components (like Harbor, Jenkins)
+- **ApplicationSets**: Templates that create multiple similar applications
+- **Projects**: Group applications and define permissions
+- **Sync Policies**: How and when to deploy changes
 
-# Monitor deployment progress
-kubectl get applications -n argocd -w
-
-# Check ApplicationSets
-kubectl get applicationsets -n argocd
-
-# View sync status
-argocd app list
-```
-
-### Application Structure
-- **ArgoCD**: Deployed separately via [infra repository](https://github.com/bitsdalab/infra)
-- **Infrastructure Apps**: Core platform components (cert-manager, Kong, Longhorn, Velero, External Secrets Operator, Vault) + Cilium LoadBalancer config
-- **CICD Apps**: Developer platform components (Authentik, Harbor, Jenkins)
-- **ApplicationSets**: Automated deployment patterns for multiple applications
-
-### Helm Values Management
-Values files are organized by component:
-```
-argocd/values/
-├── authentik/values.yaml                    # Identity provider configuration
-├── cert-manager/values.yaml                 # Certificate management
-├── external-secrets-operator/values.yaml    # External secrets integration
-├── harbor/values.yaml                       # Container registry
-├── jenkins/values.yaml                      # CI/CD server
-├── kong/values.yaml                        # Ingress controller
-├── longhorn/values.yaml                    # Storage system
-├── vault/values.yaml                       # Secret management
-└── velero/values.yaml                      # Backup system
-```
-
-## CICD Platform Services
-
-### Authentik (Identity Provider)
-- **URL**: https://authentik.cicd.bitsb.dev
-- **Purpose**: SSO and identity management
-- **Initial Setup**: Navigate to `/if/flow/initial-setup/` on first access
-- **Features**: SAML, OAuth2, LDAP integration
-
-### Harbor (Container Registry)
-- **URL**: https://harbor.cicd.bitsb.dev  
-- **Credentials**: admin / Harbor12345
-- **Purpose**: Container image storage and security scanning
-- **Features**: Vulnerability scanning, image signing, replication
-
-### Jenkins (CI/CD Server)
-- **URL**: https://jenkins.cicd.bitsb.dev
-- **Credentials**: admin / admin123
-- **Purpose**: Build automation and CI/CD pipelines
-- **Features**: Pipeline as code, plugin ecosystem, distributed builds
-
-## Troubleshooting
+## 🆘 Quick Troubleshooting
 
 ### Common Issues
-1. **ArgoCD sync failures**: Check repository access and credentials
-2. **Certificate issues**: Verify cert-manager and ClusterIssuer configuration
-3. **Ingress not accessible**: Check Kong controller and LoadBalancer service
-4. **Storage issues**: Validate Longhorn installation and node dependencies
-5. **Vault sealed**: Ensure unseal key secret is properly configured
-
-### Debug Commands
 ```bash
-# Check all pods status
-kubectl get pods -A
-
-# Check ArgoCD applications
+# Check if ArgoCD is working
 kubectl get applications -n argocd
 
-# Check LoadBalancer services and IPs
-kubectl get svc -A --field-selector spec.type=LoadBalancer
+# Check if pods are running
+kubectl get pods -A
 
-# Check ingress resources
+# Check ingress and LoadBalancer
+kubectl get svc -A --field-selector spec.type=LoadBalancer
 kubectl get ingress -A
 
 # Check certificates
 kubectl get certificates -A
-
-# Check storage classes
-kubectl get storageclass
-
-# View component logs
-kubectl logs -l app.kubernetes.io/name=argocd-server -n argocd
-kubectl logs -l app.kubernetes.io/name=kong -n kong
-kubectl logs -l app=cert-manager -n cert-manager
 ```
 
-### Service Health Checks
-```bash
-# Kong ingress controller
-curl -k https://kong.kong.svc.cluster.local:8443/status
+### Get Help
+- 🏗️ **Infrastructure issues**: See [Infrastructure Troubleshooting](docs/INFRASTRUCTURE.md#troubleshooting)
+- 🔄 **CI/CD issues**: See [CI/CD Troubleshooting](docs/CICD.md#troubleshooting)
+- 📊 **Monitoring issues**: See [Observability Troubleshooting](docs/OBSERVABILITY.md#troubleshooting)
 
-# ArgoCD server
-kubectl port-forward svc/argocd-server -n argocd 8080:443
+## 🎓 Learning Path
 
-# Certificate validation
-openssl s_client -connect authentik.cicd.bitsb.dev:443 -servername authentik.cicd.bitsb.dev
-```
+**For Beginners:**
+1. **Understand Kubernetes basics** (pods, services, deployments)
+2. **Learn GitOps concepts** (declarative config, reconciliation loops)
+3. **Deploy this platform** and explore each component
+4. **Make small changes** to see GitOps in action
 
-## Security Considerations
+**For Advanced Users:**
+1. **Customize the platform** for your specific needs
+2. **Add new applications** using ApplicationSets
+3. **Integrate with existing systems** (LDAP, monitoring, etc.)
+4. **Contribute improvements** back to the repository
 
-### TLS/SSL
-- All ingress traffic is automatically redirected to HTTPS
-- Wildcard certificates for `*.cicd.bitsb.dev`
-- Let's Encrypt production certificates with automatic renewal
-- Kong ingress controller handles TLS termination
+## 🔐 Security Considerations
 
-### Access Control
-- ArgoCD projects provide namespace isolation and RBAC
-- Service accounts with minimal required permissions
-- Authentik provides centralized identity management
-- Harbor registry access controls and vulnerability scanning
+- **TLS Everywhere**: All services use HTTPS with automatic certificates
+- **Secret Management**: Vault provides centralized secret storage
+- **RBAC**: ArgoCD projects control who can deploy what
+- **Image Security**: Harbor scans containers for vulnerabilities
+- **Backup**: Velero ensures you can recover from disasters
 
-### Secret Management
-- Vault provides centralized secret storage and encryption
-- Kubernetes secrets for service-to-service communication
-- GitHub repository access via secure tokens
-- Automated Vault unseal with secure key storage
+## 🌟 What Makes This Special
 
-### Network Security
-- **Kong ingress**: Provides secure external access with TLS termination
-- **Internal service communication**: via cluster DNS with TLS encryption
-- **Longhorn storage**: encryption at rest for persistent volumes
-- **LoadBalancer services**: External access managed by cluster CNI
+- **Beginner Friendly**: Detailed guides for newcomers to DevOps
+- **Production Ready**: Used in real environments, not just demos
+- **GitOps Native**: Everything is managed through Git workflows
+- **Modular Design**: Use only what you need, add more later
+- **Open Source**: No vendor lock-in, fully transparent
 
-## Backup Strategy
+---
 
-### Velero Backup System
-The platform includes automated backup capabilities with external MinIO storage support for multi-node setups:
+**Ready to start?** Choose your path:
+- 🏗️ **[Infrastructure Guide](docs/INFRASTRUCTURE.md)** - Understand the foundation
+- 🔄 **[CI/CD Guide](docs/CICD.md)** - Set up development workflow
+- 📊 **[Observability Guide](docs/OBSERVABILITY.md)** - Monitor everything
+---
 
-#### Basic Velero Operations
-```bash
-# View backup schedules
-kubectl get schedules -n velero
-
-# Create manual backup
-velero backup create manual-backup --include-namespaces=argocd,vault,authentik,harbor,jenkins
-
-# List backups
-velero backup get
-
-# Restore from backup
-velero restore create --from-backup <backup-name>
-```
-
-#### External MinIO Configuration
-For production deployments, configure Velero with external MinIO servers for redundant backup storage:
-
-##### MinIO Credentials Secret
-```yaml
-apiVersion: v1
-kind: Secret
-metadata:
-  name: velero-minio-creds
-  namespace: velero
-type: Opaque
-stringData:
-  cloud: |
-    [default]
-    aws_access_key_id = <MINIO_ACCESS_KEY>
-    aws_secret_access_key = <MINIO_SECRET_KEY>
-```
-
-##### Backup Storage Locations (Multi-Node)
-Configure multiple backup storage locations for redundancy:
-
-**Primary Node (192.168.1.52)**:
-```yaml
-apiVersion: velero.io/v1
-kind: BackupStorageLocation
-metadata:
-  name: minio-node-1
-  namespace: velero
-spec:
-  provider: aws
-  objectStorage:
-    bucket: velero
-  config:
-    region: us-east-1
-    s3Url: http://192.168.1.52:9000
-    insecureSkipTLSVerify: "true"
-  credential:
-    name: velero-minio-creds
-    key: cloud
-```
-
-**Secondary Node (192.168.1.53)**:
-```yaml
-apiVersion: velero.io/v1
-kind: BackupStorageLocation
-metadata:
-  name: minio-node-2
-  namespace: velero
-spec:
-  provider: aws
-  objectStorage:
-    bucket: velero
-  config:
-    region: us-east-1
-    s3Url: http://192.168.1.53:9000
-    insecureSkipTLSVerify: "true"
-  credential:
-    name: velero-minio-creds
-    key: cloud
-```
-
-##### Automated Backup Schedules
-Create scheduled backups for both storage locations (every 4 hours):
-
-**Primary Schedule**:
-```yaml
-apiVersion: velero.io/v1
-kind: Schedule
-metadata:
-  name: backup-every-4h-node1
-  namespace: velero
-spec:
-  schedule: "0 */4 * * *"
-  template:
-    includedNamespaces:
-      - '*'
-    ttl: 360h
-    storageLocation: minio-node-1
-    snapshotVolumes: false
-```
-
-**Secondary Schedule**:
-```yaml
-apiVersion: velero.io/v1
-kind: Schedule
-metadata:
-  name: backup-every-4h-node2
-  namespace: velero
-spec:
-  schedule: "0 */4 * * *"
-  template:
-    includedNamespaces:
-      - '*'
-    ttl: 360h
-    storageLocation: minio-node-2
-    snapshotVolumes: false
-```
-
-##### Manual Testing
-Create immediate test backups for each storage location:
-
-**Test Backup to Primary Node**:
-```yaml
-apiVersion: velero.io/v1
-kind: Backup
-metadata:
-  name: test-backup-node1
-  namespace: velero
-spec:
-  includedNamespaces:
-    - '*'
-  storageLocation: minio-node-1
-  ttl: 240h
-  snapshotVolumes: false
-```
-
-**Test Backup to Secondary Node**:
-```yaml
-apiVersion: velero.io/v1
-kind: Backup
-metadata:
-  name: test-backup-node2
-  namespace: velero
-spec:
-  includedNamespaces:
-    - '*'
-  storageLocation: minio-node-2
-  ttl: 240h
-  snapshotVolumes: false
-```
-
-Apply test backups:
-```bash
-kubectl apply -f <backup-yaml-file>
-kubectl -n velero get backup
-```
-
-#### Backup Configuration Notes
-- **Volume Snapshots**: Set `snapshotVolumes: false` to disable volume snapshots when using Longhorn for PV management
-- **TTL Settings**: Backups are retained for 360 hours (15 days) for scheduled backups, 240 hours (10 days) for test backups
-- **Security**: MinIO connections use `insecureSkipTLSVerify: "true"` for internal cluster communication
-- **Bucket Names**: Both nodes use the same bucket name `velero` for consistency
-
-### Critical Data Protection
-- **ArgoCD**: Configuration and application definitions
-- **Vault**: Encrypted secrets and policies
-- **Harbor**: Container images and metadata
-- **Jenkins**: Job configurations and build history
-- **Authentik**: User accounts and SSO configuration
-
-## Monitoring and Observability
-
-### Built-in Health Checks
-- ArgoCD application sync status and health
-- Certificate validity and renewal status
-- Storage class and persistent volume status
-- Service endpoint reachability and response times
-
-### Future Integration Points
-Ready for observability stack integration:
-- **Prometheus**: Metrics collection from all components
-- **Grafana**: Visualization and alerting dashboards
-- **Loki**: Centralized log aggregation
-- **Tempo**: Distributed tracing capabilities
-
-**Note**: Observability stack is not currently deployed but the platform is ready for integration.
-
-## Platform Customization
-
-### Adding New Applications
-1. **Create Application Definition**: Add to appropriate ApplicationSet in `argocd/appsets/`
-2. **Add Helm Values**: Create values file in `argocd/values/<app-name>/`
-3. **Configure Project Access**: Update ArgoCD project permissions if needed
-4. **Update Bootstrap**: Add any required secrets or dependencies
-
-### Custom Values Configuration
-Each component uses a dedicated values file for customization:
-```yaml
-# Example: Custom Kong configuration
-# argocd/values/kong/values.yaml
-image:
-  tag: "3.5"
-env:
-  router_flavor: traditional
-proxy:
-  type: LoadBalancer
-```
-
-### ApplicationSet Patterns
-The platform uses ApplicationSets for automated application management:
-```yaml
-# Infrastructure ApplicationSet
-apiVersion: argoproj.io/v1alpha1
-kind: ApplicationSet
-metadata:
-  name: infrastructure
-spec:
-  generators:
-  - list:
-      elements:
-      - name: cert-manager
-        namespace: cert-manager
-        repoURL: https://charts.jetstack.io
-        chart: cert-manager
-        targetRevision: v1.16.2
-  template:
-    # Application template with Helm source
-```
-
-### Environment-Specific Configuration
-Customize deployments for different environments:
-- **Development**: Reduced resource limits, debug logging
-- **Staging**: Production-like settings with test data
-- **Production**: Full resource allocation, security hardening
-
-## Migration and Upgrades
-
-### Component Upgrades
-Upgrade individual components through GitOps:
-1. Update chart version in ApplicationSet
-2. Update values files if needed
-3. Commit changes to trigger ArgoCD sync
-4. Monitor deployment status
-
-### Platform Migration
-Steps for migrating to new cluster:
-1. **Backup Data**: Use Velero to backup all namespaces
-2. **Export Secrets**: Backup Vault unseal keys and GitHub tokens
-3. **Deploy Platform**: Run bootstrap script on new cluster
-4. **Restore Data**: Use Velero restore functionality
-5. **Validate Services**: Verify all components are functional
-
-### Version Management
-- **Semantic Versioning**: All Helm charts use semantic versions
-- **Automated Updates**: Renovate bot can manage dependency updates
-- **Rollback Support**: ArgoCD provides easy rollback capabilities
-- **Change Tracking**: Git history provides full audit trail
-
-## Production Readiness
-
-### High Availability Considerations
-- **Multi-node Deployment**: Distribute components across multiple nodes
-- **Resource Limits**: Set appropriate CPU and memory limits
-- **Health Checks**: Configure readiness and liveness probes
-- **Backup Strategy**: Regular automated backups with Velero
-
-### Performance Optimization
-- **Resource Allocation**: Size components based on expected load
-- **Storage Performance**: Use high-performance storage classes
-- **Network Optimization**: Configure ingress for optimal routing
-- **Monitoring**: Implement comprehensive observability
-
-### Disaster Recovery
-- **Backup Automation**: Scheduled backups to external storage
-- **Recovery Procedures**: Documented restore processes
-- **Data Replication**: Cross-region backup storage
-- **RTO/RPO Targets**: Defined recovery time and point objectives
-
-## Conclusion
-
-This GitOps platform provides a production-ready, automated approach to Kubernetes infrastructure and CICD management that:
-
-- **Simplifies Deployment**: Single-command bootstrap for complete platform (after ArgoCD deployment via infra repo)
-- **Ensures Consistency**: GitOps workflow maintains declarative state
-- **Provides Security**: Comprehensive security controls and secret management
-- **Enables Scalability**: Modular architecture supports growth and customization
-- **Facilitates Operations**: Built-in monitoring, backup, and troubleshooting capabilities
-
-**Deployment Flow**:
-1. **Infrastructure Setup**: Use [bitsdalab/infra](https://github.com/bitsdalab/infra) to deploy ArgoCD and cluster foundations
-2. **Platform Bootstrap**: Use this repository to deploy the complete GitOps platform components
-
-The platform serves as a solid foundation for any organization looking to implement modern DevOps practices with Kubernetes, providing both infrastructure services and a complete CICD pipeline that can be customized and extended to meet specific requirements.
+**Ready to start?** Choose your path:
+- 🏗️ **[Infrastructure Guide](docs/INFRASTRUCTURE.md)** - Understand the foundation
+- 🔄 **[CI/CD Guide](docs/CICD.md)** - Set up development workflow
+- 📊 **[Observability Guide](docs/OBSERVABILITY.md)** - Monitor everything

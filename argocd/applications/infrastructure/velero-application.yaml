@@ -1,14 +1,24 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: velero-prerequisites
+  name: velero
   namespace: argocd
+  labels:
+    app.kubernetes.io/name: velero
+    app.kubernetes.io/part-of: infrastructure
 spec:
   project: infrastructure
-  source:
-    repoURL: https://github.com/bitsdalab/deployment.git
-    targetRevision: main
-    path: argocd/applications/infrastructure/velero
+  sources:
+    - repoURL: https://vmware-tanzu.github.io/helm-charts
+      chart: velero
+      targetRevision: 10.1.0
+      helm:
+        valueFiles:
+          - $values/argocd/values/infrastructure/velero/values.yaml
+        ignoreMissingValueFiles: true
+    - repoURL: https://github.com/bitsdalab/deployment.git
+      targetRevision: main
+      ref: values
   destination:
     server: https://kubernetes.default.svc
     namespace: velero
@@ -16,3 +26,19 @@ spec:
     automated:
       prune: true
       selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - PruneLast=true
+      - Validate=true
+      - SkipDryRunOnMissingResource=true
+      # Handle Helm pre-upgrade hooks that might conflict
+      - RespectIgnoreDifferences=true
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 3
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

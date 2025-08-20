@@ -3,19 +3,23 @@
 set -e
 
 # Step 0: Vault Unseal Key Secret
+# WARNING: This is for development/testing only!
+# In production, Vault should be manually unsealed for security.
+# Consider using Vault Auto-unseal with cloud KMS (AWS KMS, Azure Key Vault, etc.)
+# or implement proper key management with multiple unseal keys and threshold.
 echo ""
-echo "🔑 Step 0: Vault Unseal Key Secret"
-echo "==================================="
+echo "🔑 Step 0: Vault Unseal Key Secret (DEV ONLY)"
+echo "=============================================="
 
 VAULT_NAMESPACE="vault"
 VAULT_UNSEAL_SECRET="vault-unseal-secret"
 
 # Check if Vault unseal key is set, prompt if not
 if [[ -z "$VAULT_UNSEAL_KEY" ]]; then
-    read -s -p "Vault Unseal Key: " VAULT_UNSEAL_KEY; echo
+    read -s -p "Vault Unseal Key (DEV ONLY): " VAULT_UNSEAL_KEY; echo
 fi
 
-echo "🔐 Configuring Vault unseal key secret..."
+echo "🔐 Configuring Vault unseal key secret (DEV ONLY)..."
 kubectl apply -f - <<EOF
 apiVersion: v1
 kind: Secret
@@ -29,7 +33,7 @@ type: Opaque
 stringData:
   key: $VAULT_UNSEAL_KEY
 EOF
-echo "✅ Vault unseal key secret configured"
+echo "✅ Vault unseal key secret configured (DEV ONLY)"
 
 echo "🚀 Bootstrapping ArgoCD GitOps Platform (Development)"
 echo "====================================================="
@@ -76,18 +80,35 @@ EOF
 
 echo "✅ Repository access configured"
 
+PROJECT="observability"
+kubectl apply -f - <<EOF
+apiVersion: v1
+kind: Secret
+metadata:
+  name: bitsdalab-deployment-repo-observability
+  namespace: $ARGOCD_NAMESPACE
+  labels:
+    argocd.argoproj.io/secret-type: repository
+type: Opaque
+stringData:
+  type: git
+  url: $GITHUB_REPO
+  project: $PROJECT
+${GITHUB_USERNAME:+  username: $GITHUB_USERNAME}
+${GITHUB_TOKEN:+  password: $GITHUB_TOKEN}
+EOF
+
+echo "✅ Repository access for observability configured"
+
 # Step 2: Apply ArgoCD Projects
 echo ""
 echo "📋 Step 2: Applying ArgoCD Projects (RBAC)"
 echo "=========================================="
 
-#setup ArgoCD projects
-echo "Applying ArgoCD projects..."
+echo "🔧 Applying ArgoCD projects..."
 
-kubectl apply -f argocd/projects/infrastructure.yaml
-kubectl apply -f argocd/projects/cicd.yaml
-#kubectl apply -f argocd/projects/platform.yaml
-#kubectl apply -f argocd/projects/workloads.yaml
+# Apply all ArgoCD projects from directory
+kubectl apply -f argocd/projects/
 
 echo "✅ ArgoCD Projects applied"
 
@@ -96,51 +117,12 @@ echo ""
 echo "📋 Step 3: Starting GitOps Bootstrap"
 echo "==================================="
 
-# Apply Applications root (deploys all Applications)
-kubectl apply -f argocd/bootstrap/infrastructure-apps-root.yaml
+echo "🚀 Applying bootstrap applications..."
 
-# Apply ApplicationSet root (deploys all ApplicationSets)
-kubectl apply -f argocd/bootstrap/infrastructure-appset-root.yaml
+# Apply all bootstrap configurations from directory
+kubectl apply -f argocd/bootstrap/
 
-echo "✅ Infrastructure Applications and ApplicationSets created"
-
-# Step 4: Deploy CICD Platform
-echo ""
-echo "📋 Step 4: Deploying CICD Platform"
-echo "=================================="
-
-# Apply CICD ApplicationSet root (deploys Authentik, Harbor, Jenkins)
-kubectl apply -f argocd/bootstrap/cicd-appset-root.yaml
-
-echo "✅ CICD Platform ApplicationSet created"
-
-# Step 5: Display Access Information
-echo ""
-echo "🌐 Step 5: Access Information"
-echo "============================"
-
-echo ""
-echo "📝 Add these domains to your /etc/hosts:"
-echo "----------------------------------------"
-echo "# Replace <CLUSTER_IP> with your actual cluster IP"
-echo "<CLUSTER_IP>    argocd.cicd.bitsb.dev"
-echo "<CLUSTER_IP>    longhorn.cicd.bitsb.dev"
-echo "<CLUSTER_IP>    vault.cicd.bitsb.dev"
-echo "<CLUSTER_IP>    authentik.cicd.bitsb.dev"
-echo "<CLUSTER_IP>    harbor.cicd.bitsb.dev"
-echo "<CLUSTER_IP>    jenkins.cicd.bitsb.dev"
-echo ""
-
-echo "🔍 Find your cluster IP with:"
-echo "kubectl get svc -n kong kong-proxy -o jsonpath='{.status.loadBalancer.ingress[0].ip}'"
-echo ""
-
-echo "🔐 Default Credentials:"
-echo "----------------------"
-echo "Harbor:   https://harbor.cicd.bitsb.dev (admin / Harbor12345)"
-echo "Jenkins:  https://jenkins.cicd.bitsb.dev (admin / admin123)"
-echo "Authentik: https://authentik.cicd.bitsb.dev (setup required on first access)"
-echo ""
+echo "✅ All ApplicationSets and Applications created"
 
 echo "🎉 Bootstrap Complete! Your GitOps platform is deploying..."
 echo "💡 Monitor deployment: kubectl get applications -n argocd -w"
