@@ -1,0 +1,90 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: infrastructure
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: infrastructure-appset
+    app.kubernetes.io/part-of: infrastructure
+spec:
+  generators:
+  - list:
+      elements:
+      # Cert-Manager (Certificate management)
+      - name: cert-manager
+        namespace: cert-manager
+        repoURL: https://charts.jetstack.io
+        chart: cert-manager
+        targetRevision: v1.16.2
+        priority: "200"
+
+      # Kong (Ingress Controller)
+      - name: kong
+        namespace: ingress
+        repoURL: https://kong.github.io/charts
+        chart: kong
+        targetRevision: 2.40.0
+        priority: "300"
+
+      # Longhorn (Storage)
+      - name: longhorn
+        namespace: longhorn-system
+        repoURL: https://charts.longhorn.io
+        chart: longhorn
+        targetRevision: 1.9.1
+        priority: "400"
+
+      # External Secrets Operator (ESO)
+      - name: external-secrets-operator
+        namespace: external-secrets
+        repoURL: https://charts.external-secrets.io
+        chart: external-secrets
+        targetRevision: 0.9.19
+        priority: "600"
+
+      # HashiCorp Vault (Secrets management)
+      - name: vault
+        namespace: vault
+        repoURL: https://helm.releases.hashicorp.com
+        chart: vault
+        targetRevision: 0.30.0
+        priority: "700"
+  template:
+    metadata:
+      name: "{{name}}"
+      labels:
+        app.kubernetes.io/name: "{{name}}"
+        app.kubernetes.io/part-of: infrastructure
+    spec:
+      project: infrastructure
+      sources:
+        - repoURL: "{{repoURL}}"
+          chart: "{{chart}}"
+          targetRevision: "{{targetRevision}}"
+          helm:
+            valueFiles:
+              - $values/argocd/values/infrastructure/{{name}}/values.yaml
+            ignoreMissingValueFiles: true
+        - repoURL: https://github.com/bitsdalab/deployment.git
+          targetRevision: main
+          ref: values
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+      syncPolicy:
+        automated:
+          prune: true
+          selfHeal: true
+          allowEmpty: false
+        syncOptions:
+        - CreateNamespace=true
+        - PrunePropagationPolicy=foreground
+        - PruneLast=true
+        - Validate=true
+        - SkipDryRunOnMissingResource=true
+        retry:
+          limit: 3
+          backoff:
+            duration: 5s
+            factor: 2
+            maxDuration: 3m

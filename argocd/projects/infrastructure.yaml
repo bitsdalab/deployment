@@ -1,0 +1,37 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: infrastructure
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: infrastructure
+spec:
+  description: Core infrastructure components (MetalLB, cert-manager, storage, networking)
+  
+  # Source repositories
+  sourceRepos:
+  - 'https://github.com/bitsdalab/deployment.git'
+  - 'https://kong.github.io/charts'
+  - 'https://charts.longhorn.io'
+  - 'https://charts.jetstack.io'
+  - 'https://charts.min.io/'
+  - 'https://vmware-tanzu.github.io/helm-charts'
+  - 'https://charts.external-secrets.io'
+  - 'https://helm.releases.hashicorp.com'
+  # Destination clusters and namespaces
+  destinations:
+  - namespace: '*'
+    server: '*'
+  
+  clusterResourceWhitelist:
+  # Allow all cluster-scoped resources (lock down for prod)
+  - group: '*'
+    kind: '*'
+  namespaceResourceWhitelist:
+  # Allow all namespaced resources (lock down for prod)
+  - group: '*'
+    kind: '*'
+  
+  roles: []
+  
+  syncWindows: []

@@ -1,0 +1,28 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: observability
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: observability
+spec:
+  description: Observability and monitoring stack (ECK, Prometheus, Grafana, Alertmanager, Beats, Zipkin, etc)
+  sourceRepos:
+  - 'https://github.com/bitsdalab/deployment.git'
+  - 'https://helm.elastic.co'
+  - 'https://prometheus-community.github.io/helm-charts'
+  - 'https://grafana.github.io/helm-charts'
+  - 'https://openzipkin.github.io/zipkin'
+  - 'https://thanos-io.github.io/thanos-helm-chart'
+  - 'https://charts.signoz.io'
+  destinations:
+  - namespace: '*'
+    server: '*'
+  clusterResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  namespaceResourceWhitelist:
+  - group: '*'
+    kind: '*'
+  roles: []
+  syncWindows: []

@@ -1,0 +1,76 @@
+authentik:
+  secret_key: "REPLACE_ME_WITH_A_SECRET_KEY"
+  # Database configuration pointing to the included PostgreSQL
+  postgresql:
+    password: "authentikdb123"  # Change this in production
+    user: "authentik"
+    name: "authentik"
+    host: "authentik-postgresql"
+    port: 5432
+
+# Global environment variables for database connection
+global:
+  env:
+    - name: AUTHENTIK_POSTGRESQL__PASSWORD
+      value: "authentikdb123"
+    - name: AUTHENTIK_POSTGRESQL__USER
+      value: "authentik"
+    - name: AUTHENTIK_POSTGRESQL__NAME
+      value: "authentik"
+    - name: AUTHENTIK_POSTGRESQL__HOST
+      value: "authentik-postgresql"
+
+# Enable and configure PostgreSQL subchart
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "authentikdb123"  # Change this in production
+    username: "authentik"
+    password: "authentikdb123"  # Change this in production
+    database: "authentik"
+  primary:
+    persistence:
+      enabled: true
+      size: 8Gi
+
+# Enable and configure Redis subchart  
+redis:
+  enabled: true
+  auth:
+    enabled: false  # For simplicity, enable in production
+  master:
+    persistence:
+      enabled: true
+      size: 2Gi
+
+server:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi
+  ingress:
+    enabled: true
+    ingressClassName: kong
+    hosts:
+      - authentik.cicd.bitsb.dev
+    tls:
+      - secretName: authentik-tls
+        hosts:
+          - authentik.cicd.bitsb.dev
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+    # INITIAL SETUP: https://authentik.cicd.bitsb.dev/if/flow/initial-setup/
+    # Default admin user: akadmin (set password during initial setup)
+    # Must include trailing slash in setup URL or you'll get "Not Found" error
+
+worker:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 500m
+      memory: 1024Mi

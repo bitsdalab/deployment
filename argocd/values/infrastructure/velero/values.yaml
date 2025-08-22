@@ -1,0 +1,38 @@
+# Velero values.yaml for MinIO backend
+credentials:
+  useSecret: true
+  existingSecret: velero-minio-creds
+configuration:
+  backupStorageLocation:
+    - name: minio-node-1
+      provider: aws
+      bucket: velero
+      config:
+        region: minio
+        s3ForcePathStyle: "true"
+        s3Url: http://bits-node-1:9000
+    - name: minio-node-2
+      provider: aws
+      bucket: velero
+      config:
+        region: minio
+        s3ForcePathStyle: "true"
+        s3Url: http://bits-node-2:9000
+  # Volume snapshot location configuration
+  volumeSnapshotLocation:
+    - name: default
+      provider: aws
+      config:
+        region: minio
+
+# Deployment configuration
+deployNodeAgent: false  # Disable node agent if you don't need volume snapshots
+snapshotsEnabled: false  # Disable volume snapshots, only backup Kubernetes resources
+# AWS plugin is required for S3/MinIO backends
+initContainers:
+  - name: velero-plugin-for-aws
+    image: velero/velero-plugin-for-aws:v1.9.2 # Use the version matching your Velero install
+    volumeMounts:
+      - mountPath: /target
+        name: plugins
+# Optionally, set schedules, nodeAgent, etc. as needed

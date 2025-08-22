@@ -1,0 +1,88 @@
+# Jenkins CI/CD Configuration
+controller:
+  # Updated admin configuration format
+  admin:
+    password: "admin123"  # Change this in production
+  
+  # Resource requests and limits
+  resources:
+    requests:
+      cpu: 100m
+      memory: 512Mi
+    limits:
+      cpu: 1000m
+      memory: 2Gi
+
+  # Ingress configuration
+  ingress:
+    enabled: true
+    ingressClassName: kong
+    hostName: jenkins.cicd.bitsb.dev
+    tls:
+      - secretName: jenkins-tls
+        hosts:
+          - jenkins.cicd.bitsb.dev
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+
+  # Java options for better performance
+  javaOpts: "-Xmx1g -XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport"
+
+  # Install essential plugins (latest versions)
+  installPlugins:
+    # Core Pipeline & Workflow
+    - kubernetes
+    - workflow-aggregator
+    - pipeline-stage-view
+    
+    # Source Control
+    - git
+    - github
+    - github-branch-source
+    
+    # Build & Package Management
+    - maven-plugin
+    - gradle
+    - nodejs
+    - docker-workflow
+    
+    # Testing & Quality
+    - junit
+    - sonar
+    - warnings-ng
+    
+    # Security & Secrets
+    - credentials
+    - credentials-binding
+    - kubernetes-credentials
+    
+    # Deployment & Infrastructure
+    - kubernetes-cli
+    
+    # Notifications
+    - slack
+    
+    # Monitoring & Utilities
+    - build-timeout
+    - timestamper
+    - ws-cleanup
+    
+    # UI & User Experience
+    - configuration-as-code
+    - blueocean
+
+# Persistence
+persistence:
+  enabled: true
+  size: 20Gi
+
+# Agent configuration
+agent:
+  enabled: true
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi

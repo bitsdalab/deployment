@@ -1,0 +1,110 @@
+# Minimal working values for HashiCorp Vault Helm chart
+# See: https://github.com/hashicorp/vault-helm/blob/main/values.yaml
+
+server:
+  enabled: true
+  ha:
+    enabled: false
+    raft:
+      enabled: false
+  standalone:
+    enabled: true
+    config: |
+      ui = true
+      listener "tcp" {
+        tls_disable = 1
+        address = "[::]:8200"
+      }
+      storage "file" {
+        path = "/vault/data"
+      }
+  dataStorage:
+    enabled: true
+    size: 10Gi
+  affinity: {}
+  ingress:
+    enabled: true
+    ingressClassName: "kong"
+    labels: {}
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+      cert-manager.io/common-name: "vault.cicd.bitsb.dev"
+      konghq.com/protocols: "https"
+      konghq.com/https-redirect-status-code: "301"
+    hosts:
+      - host: vault.cicd.bitsb.dev
+        paths:
+          - /
+    tls:
+      - secretName: vault-tls
+        hosts:
+          - vault.cicd.bitsb.dev
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "256Mi"
+    limits:
+      cpu: "500m"
+      memory: "512Mi"
+  service:
+    type: ClusterIP
+
+  extraContainers:
+    - name: unseal-sidecar
+      image: curlimages/curl
+      command:
+        - sh
+        - -c
+        - |
+          key=$(cat /vault/keys/key)
+          echo "Attempting to unseal Vault..."
+          while true; do
+            status=$(curl -s http://localhost:8200/v1/sys/health)
+            if echo "$status" | grep -q '"sealed":false'; then
+              echo "Vault is already unsealed. Sleeping forever."
+              sleep infinity
+            fi
+            curl --request PUT --data "{\"key\": \"$key\"}" http://localhost:8200/v1/sys/unseal
+            sleep 2
+          done
+      volumeMounts:
+        - name: userconfig-vault-unseal-secret
+          mountPath: /vault/keys
+          readOnly: true
+  extraVolumes:
+    - type: secret
+      name: vault-unseal-secret
+      secretName: vault-unseal-secret
+      items:
+        - key: key
+          path: key
+  extraVolumeMounts:
+    - name: userconfig-vault-unseal-secret
+      mountPath: /vault/keys
+      readOnly: true
+
+ui:
+  enabled: true
+  resources:
+    requests:
+      cpu: "100m"
+      memory: "128Mi"
+    limits:
+      cpu: "200m"
+      memory: "256Mi"
+
+# HashiCorp Vault Configuration
+# Production-ready setup with HA, Auto-unseal
+
+# Injector configuration
+injector:
+  enabled: true
+  # ArgoCD compatibility - ignore webhook configuration changes
+  webhook:
+    annotations:
+      argocd.argoproj.io/compare-options: IgnoreExtraneous
+      argocd.argoproj.io/sync-options: Prune=false
+
+# Enable metrics for Prometheus
+metrics:
+  enabled: true

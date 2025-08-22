@@ -1,0 +1,36 @@
+# cert-manager Configuration
+# Version: v1.16.2
+# Documentation: https://cert-manager.io/docs/
+
+# Install CRDs as part of the chart
+installCRDs: true
+
+global:
+  leaderElection:
+    namespace: cert-manager
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 100m
+    memory: 128Mi
+
+webhook:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+cainjector:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi

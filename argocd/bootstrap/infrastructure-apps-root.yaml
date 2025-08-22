@@ -1,0 +1,33 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: infrastructure-apps
+  namespace: argocd
+  labels:
+    app.kubernetes.io/name: infrastructure-apps
+    app.kubernetes.io/part-of: bootstrap
+spec:
+  project: infrastructure
+  source:
+    repoURL: https://github.com/bitsdalab/deployment.git
+    targetRevision: main
+    path: argocd/applications/infrastructure
+    directory:
+      recurse: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: argocd
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

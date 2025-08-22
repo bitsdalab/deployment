@@ -1,0 +1,77 @@
+# Harbor Container Registry Configuration
+expose:
+  type: ingress
+  tls:
+    enabled: true
+    certSource: secret
+    secret:
+      secretName: harbor-tls
+  ingress:
+    hosts:
+      core: harbor.cicd.bitsb.dev
+    className: kong
+    annotations:
+      cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
+
+# External URL for Harbor
+externalURL: https://harbor.cicd.bitsb.dev
+
+# Admin password (change this in production)
+harborAdminPassword: "Harbor12345"
+
+# Resource requests and limits
+core:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+
+jobservice:
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+
+registry:
+  registry:
+    resources:
+      requests:
+        cpu: 100m
+        memory: 256Mi
+      limits:
+        cpu: 500m
+        memory: 512Mi
+
+# Persistence with ReadWriteMany for rolling updates
+persistence:
+  enabled: true
+  persistentVolumeClaim:
+    registry:
+      accessMode: ReadWriteMany
+      size: 20Gi
+    jobservice:
+      jobLog:
+        accessMode: ReadWriteMany
+        size: 1Gi
+    database:
+      size: 5Gi
+
+# ArgoCD compatibility - prevent constant redeployments
+annotations:
+  deployment.kubernetes.io/revision: ignore
+  
+# Additional stability configurations
+portal:
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
