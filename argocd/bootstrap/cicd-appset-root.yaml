@@ -11,7 +11,7 @@ spec:
 
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
-    targetRevision: main
+    targetRevision: feature/ext-secrets
     path: argocd/appsets/cicd
     
   destination:
