@@ -26,17 +26,20 @@ ingress:
 auth:
   oidc:
     enabled: true
+    clientId: "Jru1yoSOna9Z36u913sFf4on4txpVJYAqXYE2pkZ"
+    authorizationUri: "https://authentik.cicd.bitsb.dev/application/o/authorize/"
+    tokenUri: "https://authentik.cicd.bitsb.dev/application/o/token/"
+    userInfoUri: "https://authentik.cicd.bitsb.dev/application/o/userinfo/"
     displayName: "Authentik SSO"
     scopes:
       - openid
       - profile
       - email
     usernameClaim: "preferred_username"
-
-# Reference the external secret for OIDC credentials
-extraEnvFrom:
-  - secretRef:
-      name: outline-oidc-credentials
+    # Use existing secret for client secret (managed by ESO)
+    existingSecret:
+      name: "outline-oidc-credentials"
+      clientSecretKey: "client-secret"
 
 resources:
   limits:
