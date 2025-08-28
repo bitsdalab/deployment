@@ -30,6 +30,7 @@ auth:
     authUri: "https://authentik.cicd.bitsb.dev/application/o/authorize/"
     tokenUri: "https://authentik.cicd.bitsb.dev/application/o/token/"
     userInfoUri: "https://authentik.cicd.bitsb.dev/application/o/userinfo/"
+    logoutUri: "https://authentik.cicd.bitsb.dev/application/o/outline/end-session/"
     displayName: "Authentik SSO"
     scopes:
       - openid
