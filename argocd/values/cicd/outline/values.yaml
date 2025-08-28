@@ -36,7 +36,7 @@ auth:
 # Reference the external secret for OIDC credentials
 extraEnvFrom:
   - secretRef:
-      name: outline-auth-secret
+      name: outline-oidc-credentials
 
 resources:
   limits:
