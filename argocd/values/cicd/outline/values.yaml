@@ -40,8 +40,8 @@ extraEnvFrom:
 
 resources:
   limits:
-    cpu: 200m
-    memory: 512Mi
+    cpu: 300m
+    memory: 756Mi
   requests:
     cpu: 100m
     memory: 256Mi
