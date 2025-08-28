@@ -22,6 +22,22 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
 
+# OIDC Authentication with Authentik
+auth:
+  oidc:
+    enabled: true
+    displayName: "Authentik SSO"
+    scopes:
+      - openid
+      - profile
+      - email
+    usernameClaim: "preferred_username"
+
+# Reference the external secret for OIDC credentials
+extraEnvFrom:
+  - secretRef:
+      name: outline-auth-secret
+
 resources:
   limits:
     cpu: 200m
