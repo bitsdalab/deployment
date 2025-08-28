@@ -51,8 +51,20 @@ resources:
 
 # Secure TLS handling - trust internal CA certificates
 extraEnvVars:
-  # Add your internal CA to trusted certificates (secure approach)
-  NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+  # Point to mounted CA certificate file
+  NODE_EXTRA_CA_CERTS: /etc/ssl/certs/bitsb-ca.crt
+
+# Mount your internal CA certificate
+volumes:
+  - name: bitsb-ca-cert
+    secret:
+      secretName: bitsb-root-ca-cert  # This secret should contain your CA cert
+
+volumeMounts:
+  - name: bitsb-ca-cert
+    mountPath: /etc/ssl/certs/bitsb-ca.crt
+    subPath: ca.crt
+    readOnly: true
 
 postgresql:
   enabled: true
