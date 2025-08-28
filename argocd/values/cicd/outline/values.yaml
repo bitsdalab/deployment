@@ -27,7 +27,7 @@ auth:
   oidc:
     enabled: true
     clientId: "Jru1yoSOna9Z36u913sFf4on4txpVJYAqXYE2pkZ"
-    authorizationUri: "https://authentik.cicd.bitsb.dev/application/o/authorize/"
+    authUri: "https://authentik.cicd.bitsb.dev/application/o/authorize/"
     tokenUri: "https://authentik.cicd.bitsb.dev/application/o/token/"
     userInfoUri: "https://authentik.cicd.bitsb.dev/application/o/userinfo/"
     displayName: "Authentik SSO"
