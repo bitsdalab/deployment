@@ -1,13 +1,13 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: infrastructure-apps
+  name: cicd-apps
   namespace: argocd
   labels:
-    app.kubernetes.io/name: infrastructure-apps
+    app.kubernetes.io/name: cicd-apps
     app.kubernetes.io/part-of: bootstrap
 spec:
-  project: infrastructure
+  project: cicd
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
     targetRevision: feature/ext-secrets
