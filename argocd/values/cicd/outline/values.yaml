@@ -49,22 +49,9 @@ resources:
     cpu: 100m
     memory: 256Mi
 
-# Secure TLS handling - trust internal CA certificates
+# Ignore SSL certificate verification for internal OIDC (from GitHub discussion #2606)
 extraEnvVars:
-  # Point to mounted CA certificate file
-  NODE_EXTRA_CA_CERTS: /etc/ssl/certs/bitsb-ca.crt
-
-# Mount your internal CA certificate
-volumes:
-  - name: bitsb-ca-cert
-    secret:
-      secretName: outline-tls # This secret should contain your CA cert
-
-volumeMounts:
-  - name: bitsb-ca-cert
-    mountPath: /etc/ssl/certs/bitsb-ca.crt
-    subPath: ca.crt
-    readOnly: true
+  NODE_TLS_REJECT_UNAUTHORIZED: "0"
 
 postgresql:
   enabled: true
