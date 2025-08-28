@@ -11,7 +11,7 @@ spec:
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
     targetRevision: feature/ext-secrets
-    path: argocd/applications/infrastructure
+    path: argocd/applications/cicd
     directory:
       recurse: true
   destination:
