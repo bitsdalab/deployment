@@ -49,6 +49,11 @@ resources:
     cpu: 100m
     memory: 256Mi
 
+# Secure TLS handling - trust internal CA certificates
+extraEnvVars:
+  # Add your internal CA to trusted certificates (secure approach)
+  NODE_EXTRA_CA_CERTS: /etc/ssl/certs/ca-certificates.crt
+
 postgresql:
   enabled: true
   auth:
