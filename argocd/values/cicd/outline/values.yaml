@@ -58,7 +58,7 @@ extraEnvVars:
 volumes:
   - name: bitsb-ca-cert
     secret:
-      secretName: bitsb-root-ca-cert  # This secret should contain your CA cert
+      secretName: outline-tls # This secret should contain your CA cert
 
 volumeMounts:
   - name: bitsb-ca-cert
