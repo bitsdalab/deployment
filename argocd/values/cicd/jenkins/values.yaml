@@ -28,13 +28,13 @@ controller:
   # Install minimum required plugins with specific versions
   installPlugins:
     # Kubernetes support
-    - kubernetes:4200.v1dd44f5b_1cf9
+    - kubernetes:4371.vb_33b_086d54a_1
     # Source control
-    - git:5.2.1
+    - git:5.7.0
     # Blue Ocean UI
-    - blueocean:1.30.18
+    - blueocean:1.27.21
     # Configuration as Code
-    - configuration-as-code:1775.v810dc950b_514
+    - configuration-as-code:1985.vdda_32d0c4ea_b_
 
 # Persistence
 persistence:
