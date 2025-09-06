@@ -22,13 +22,42 @@ ingress:
   annotations:
     cert-manager.io/cluster-issuer: "bitsb-root-ca-issuer"
 
+# OIDC Authentication with Authentik
+auth:
+  oidc:
+    enabled: true
+    clientId: "Jru1yoSOna9Z36u913sFf4on4txpVJYAqXYE2pkZ"
+    authUri: "https://authentik.cicd.bitsb.dev/application/o/authorize/"
+    tokenUri: "https://authentik.cicd.bitsb.dev/application/o/token/"
+    userInfoUri: "https://authentik.cicd.bitsb.dev/application/o/userinfo/"
+    logoutUri: "https://authentik.cicd.bitsb.dev/application/o/outline/end-session/"
+    displayName: "Authentik SSO"
+    scopes:
+      - openid
+      - profile
+      - email
+    usernameClaim: "preferred_username"
+    # Use existing secret for client secret (managed by ESO)
+    existingSecret:
+      name: "outline-oidc-credentials"
+      clientSecretKey: "client-secret"
+
 resources:
   limits:
-    cpu: 200m
-    memory: 512Mi
+    cpu: 300m
+    memory: 756Mi
   requests:
     cpu: 100m
     memory: 256Mi
+
+# Ignore SSL certificate verification for internal OIDC (from GitHub discussion #2606)
+extraEnvVars:
+  NODE_TLS_REJECT_UNAUTHORIZED: "0"
+
+# Use external secret for secret key (managed by ESO)
+secretKeyExternalSecret:
+  name: "outline-secrets"
+  key: "secret-key"
 
 postgresql:
   enabled: true
