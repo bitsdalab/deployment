@@ -31,7 +31,7 @@ spec:
         namespace: jenkins
         repoURL: https://charts.jenkins.io
         chart: jenkins
-        targetRevision: 5.8.74
+        targetRevision: 5.8.86
         priority: "300"
 
       # Documentation (Outline)
@@ -58,7 +58,7 @@ spec:
               - $values/argocd/values/cicd/{{name}}/values.yaml
             ignoreMissingValueFiles: true
         - repoURL: https://github.com/bitsdalab/deployment.git
-          targetRevision: main
+          targetRevision: feature/jenkins-fixes
           ref: values
       destination:
         server: https://kubernetes.default.svc

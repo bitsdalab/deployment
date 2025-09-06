@@ -1,8 +1,5 @@
 # Jenkins CI/CD Configuration
 controller:
-  # Updated admin configuration format
-  admin:
-    password: "admin123"  # Change this in production
   
   # Resource requests and limits
   resources:
@@ -28,48 +25,16 @@ controller:
   # Java options for better performance
   javaOpts: "-Xmx1g -XX:+UnlockExperimentalVMOptions -XX:+UseContainerSupport"
 
-  # Install essential plugins (latest versions)
+  # Install minimum required plugins with specific versions
   installPlugins:
-    # Core Pipeline & Workflow
-    - kubernetes
-    - workflow-aggregator
-    - pipeline-stage-view
-    
-    # Source Control
-    - git
-    - github
-    - github-branch-source
-    
-    # Build & Package Management
-    - maven-plugin
-    - gradle
-    - nodejs
-    - docker-workflow
-    
-    # Testing & Quality
-    - junit
-    - sonar
-    - warnings-ng
-    
-    # Security & Secrets
-    - credentials
-    - credentials-binding
-    - kubernetes-credentials
-    
-    # Deployment & Infrastructure
-    - kubernetes-cli
-    
-    # Notifications
-    - slack
-    
-    # Monitoring & Utilities
-    - build-timeout
-    - timestamper
-    - ws-cleanup
-    
-    # UI & User Experience
-    - configuration-as-code
-    - blueocean
+    # Kubernetes support
+    - kubernetes:4200.v1dd44f5b_1cf9
+    # Source control
+    - git:5.2.1
+    # Blue Ocean UI
+    - blueocean:1.30.18
+    # Configuration as Code
+    - configuration-as-code:1775.v810dc950b_514
 
 # Persistence
 persistence:
