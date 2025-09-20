@@ -48,28 +48,28 @@ registry:
         cpu: 500m
         memory: 512Mi
 
-# Persistence with ReadWriteMany for rolling updates
+# Persistence - Let Longhorn handle replication internally
 persistence:
   enabled: true
   persistentVolumeClaim:
     registry:
-      accessMode: ReadWriteMany
+      accessMode: ReadWriteOnce
       size: 20Gi
       storageClass: longhorn
       annotations:
-        longhorn.io/number-of-replicas: "2"
+        longhorn.io/number-of-replicas: "1"
     jobservice:
       jobLog:
-        accessMode: ReadWriteMany
+        accessMode: ReadWriteOnce
         size: 1Gi
         storageClass: longhorn
         annotations:
-          longhorn.io/number-of-replicas: "2"
+          longhorn.io/number-of-replicas: "1"
     database:
       size: 5Gi
       storageClass: longhorn
       annotations:
-        longhorn.io/number-of-replicas: "2"
+        longhorn.io/number-of-replicas: "1"
 
 # ArgoCD compatibility - prevent constant redeployments
 annotations:
