@@ -55,9 +55,9 @@ extraEnvVars:
   NODE_TLS_REJECT_UNAUTHORIZED: "0"
 
 # Use external secret for secret key (managed by ESO)
-secretKey:
-  existingSecret: "outline-secrets"
-  existingSecretKey: "secret-key"
+secretKeyExternalSecret:
+  name: "outline-secrets"
+  key: "secret-key"
 
 postgresql:
   enabled: true
