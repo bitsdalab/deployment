@@ -10,7 +10,7 @@ spec:
   project: cicd
   source:
     repoURL: https://github.com/bitsdalab/deployment.git
-    targetRevision: main
+    targetRevision: feature/jenkins-fixes
     path: argocd/applications/cicd
     directory:
       recurse: true
