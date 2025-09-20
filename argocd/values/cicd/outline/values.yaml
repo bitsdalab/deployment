@@ -59,6 +59,11 @@ secretKeyExternalSecret:
   name: "outline-secrets"
   key: "secret-key"
 
+# Use external secret for utils secret (managed by ESO)
+utilsSecretExternalSecret:
+  name: "outline-secrets"
+  key: "utils-secret"
+
 postgresql:
   enabled: true
   auth:
