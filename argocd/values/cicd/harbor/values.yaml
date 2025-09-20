@@ -55,12 +55,21 @@ persistence:
     registry:
       accessMode: ReadWriteMany
       size: 20Gi
+      storageClass: longhorn
+      annotations:
+        longhorn.io/number-of-replicas: "2"
     jobservice:
       jobLog:
         accessMode: ReadWriteMany
         size: 1Gi
+        storageClass: longhorn
+        annotations:
+          longhorn.io/number-of-replicas: "2"
     database:
       size: 5Gi
+      storageClass: longhorn
+      annotations:
+        longhorn.io/number-of-replicas: "2"
 
 # ArgoCD compatibility - prevent constant redeployments
 annotations:
