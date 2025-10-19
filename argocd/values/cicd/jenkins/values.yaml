@@ -29,12 +29,9 @@ controller:
   installPlugins:
     # Kubernetes support
     - kubernetes:4371.vb_33b_086d54a_1
-    # Source control
-    - git:5.7.0
     # Blue Ocean UI
     - blueocean:1.27.21
-    # Configuration as Code
-    - configuration-as-code:1985.vdda_32d0c4ea_b_
+
 
 # Persistence
 persistence:
